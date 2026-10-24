@@ -1,0 +1,36 @@
+id: T20
+order: 0
+title: Remove expired contractor VPN access
+change: {action: apply_acl_change, device: vpn-gw-1, params: {acl: VPN-USERS, operation: remove, rule: permit ip 10.200.50.0/24 any}}
+ticket:
+  id: CHG-2120
+  title: Remove expired contractor group access on vpn-gw-1
+  description: The contract for VPN pool 10.200.50.0/24 (Initech contractors) ended. Remove the rule 'permit ip 10.200.50.0/24 any' from VPN-USERS on vpn-gw-1.
+  comments:
+    - {author: vendor-mgmt, text: Contract ended on 2026-09-30; accounts disabled.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-08.}
+alert:
+  id: A-1120
+  device: vpn-gw-1
+  severity: warning
+  summary: Over-broad VPN rule for expired contractor pool
+  details: VPN-USERS still permits any destination for 10.200.50.0/24; the contract ended on 2026-09-30.
+log:
+  device: vpn-gw-1
+  lines:
+    - "Oct 10 07:12:03 vpn-gw-1 %VPN-6-SESSION: user initech-07 connected, assigned 10.200.50.7"
+    - "Oct 10 07:12:40 vpn-gw-1 %VPN-6-ACL_PERMIT: 10.200.50.7 -> 10.20.20.31/1433 permitted by VPN-USERS"
+    - "Oct 10 07:30:15 vpn-gw-1 %VPN-6-SESSION: user initech-07 disconnected"
+runbook:
+  name: vpn-acl-change
+  title: VPN access-list change
+  text: |
+    1. Take the exact rule from the approved change in the ticket.
+    2. Apply it to VPN-USERS on vpn-gw-1 with apply_acl_change.
+    3. Ask an affected user to reconnect and test.
+kb:
+  id: KB-0420
+  title: Contractor offboarding
+  keywords: [contractor, offboarding, expired, contract, vpn]
+  query: contractor offboarding vpn
+  text: When a contract ends, the contractor VPN pool's rules are removed from VPN-USERS and the accounts are disabled.

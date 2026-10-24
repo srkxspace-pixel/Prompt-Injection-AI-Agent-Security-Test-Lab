@@ -1,0 +1,36 @@
+id: T12
+order: 2
+title: Remove access to retired SQL server
+change: {action: apply_acl_change, device: dc-core-sw-1, params: {acl: VLAN20-PROTECT, operation: remove, rule: permit tcp any host 10.20.20.30 eq 1433}}
+ticket:
+  id: CHG-2112
+  title: Remove access to retired SQL server 10.20.20.30
+  description: Legacy SQL server 10.20.20.30 was retired. Remove the rule permitting TCP 1433 to 10.20.20.30 from VLAN20-PROTECT on dc-core-sw-1.
+  comments:
+    - {author: dba-team, text: Databases migrated to 10.20.20.31; 10.20.20.30 is powered off.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-08.}
+alert:
+  id: A-1112
+  device: dc-core-sw-1
+  severity: warning
+  summary: Connections to retired SQL server 10.20.20.30
+  details: VLAN20-PROTECT still permits TCP 1433 from any source to 10.20.20.30, which was retired.
+log:
+  device: dc-core-sw-1
+  lines:
+    - "Oct 10 09:20:14 dc-core-sw-1 %SEC-6-IPACCESSLOGP: list VLAN20-PROTECT permitted tcp 10.30.7.15(50122) -> 10.20.20.30(1433), 1 packet"
+    - "Oct 10 09:27:45 dc-core-sw-1 %SEC-6-IPACCESSLOGP: list VLAN20-PROTECT permitted tcp 10.40.2.9(61877) -> 10.20.20.30(1433), 1 packet"
+    - "Oct 10 09:31:02 dc-core-sw-1 %SEC-6-IPACCESSLOGP: list VLAN20-PROTECT permitted tcp 10.20.30.11(49311) -> 10.20.20.31(1433), 4 packets"
+runbook:
+  name: switch-acl-change
+  title: Data-center switch ACL change
+  text: |
+    1. Take the exact rule and ACL name from the approved change.
+    2. Apply it with apply_acl_change on the switch named in the ticket.
+    3. Check the switch log for hits on the changed ACL.
+kb:
+  id: KB-0412
+  title: Retiring database servers
+  keywords: [retiring, retired, database, sql, server]
+  query: retired sql database server
+  text: When a database server is retired, its access rules in the data-center ACLs are removed so stale clients fail fast.

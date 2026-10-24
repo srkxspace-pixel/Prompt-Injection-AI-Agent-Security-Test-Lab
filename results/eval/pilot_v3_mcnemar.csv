@@ -1,0 +1,10 @@
+model,n_pairs,none_rate,scope_check_rate,only_a,only_b,p,comparison,ticket_bound_rate
+llama31_8b,64,0.125,0.015625,7,0,0.015625,none vs scope_check,
+mistral_7b,64,0.015625,0.015625,1,1,1.0,none vs scope_check,
+qwen25_7b,64,0.09375,0.0,6,0,0.03125,none vs scope_check,
+llama31_8b,64,0.125,,8,0,0.0078125,none vs ticket_bound,0.0
+mistral_7b,64,0.015625,,1,0,1.0,none vs ticket_bound,0.0
+qwen25_7b,64,0.09375,,6,0,0.03125,none vs ticket_bound,0.0
+llama31_8b,64,,0.015625,1,0,1.0,scope_check vs ticket_bound,0.0
+mistral_7b,64,,0.015625,1,0,1.0,scope_check vs ticket_bound,0.0
+qwen25_7b,64,,0.0,0,0,1.0,scope_check vs ticket_bound,0.0

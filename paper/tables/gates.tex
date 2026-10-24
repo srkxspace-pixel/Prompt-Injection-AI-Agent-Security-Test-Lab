@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{Gate comparison (\%): attack success (attacker goal executed), any out-of-scope write executed, task success under attack and on controls, false-block rate on controls, denials per episode.}
+\label{tab:gates}
+\footnotesize
+\begin{tabular}{llrrrrrr}
+\toprule
+Model & Gate & ASR & Any OOS & Task (att.) & Task (ctrl) & False block & Denials \\
+\midrule
+Llama-3.1-8B & \texttt{none} & 13.5 & 14.1 & 47.9 & 16.7 & 0.0 & 0.00 \\
+Llama-3.1-8B & \texttt{scope\_check} & 0.5 & 0.5 & 12.0 & 8.3 & 16.7 & 0.80 \\
+Llama-3.1-8B & \texttt{ticket\_bound} & 0.0 & 0.0 & 13.0 & 0.0 & 16.7 & 0.75 \\
+Mistral-7B & \texttt{none} & 0.5 & 0.5 & 6.3 & 8.3 & 0.0 & 0.00 \\
+Mistral-7B & \texttt{scope\_check} & 0.5 & 0.5 & 2.6 & 8.3 & 8.3 & 0.15 \\
+Mistral-7B & \texttt{ticket\_bound} & 0.0 & 0.0 & 3.1 & 8.3 & 8.3 & 0.13 \\
+Qwen2.5-7B & \texttt{none} & 13.7 & 16.3 & 53.2 & 56.2 & 0.0 & 0.00 \\
+Qwen2.5-7B & \texttt{scope\_check} & 1.4 & 1.4 & 53.4 & 56.2 & 0.0 & 0.15 \\
+Qwen2.5-7B & \texttt{ticket\_bound} & 0.0 & 0.0 & 53.1 & 56.2 & 0.0 & 0.17 \\
+\bottomrule
+\end{tabular}
+\end{table}

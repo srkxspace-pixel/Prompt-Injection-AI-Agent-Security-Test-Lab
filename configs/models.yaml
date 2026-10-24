@@ -1,0 +1,15 @@
+# Ollama tags verified on ollama.com at M0 (2026-10-10). All three families carry the "tools" capability.
+# q4_K_M = Ollama's default quantization. The notebook records the full digest at pull time and checks the prefix.
+# Do NOT use mistral:instruct (older build, digest 3944fe81ec14).
+qwen25_7b:
+  name: Qwen2.5-7B-Instruct
+  tag: qwen2.5:7b-instruct-q4_K_M
+  digest_prefix: 845dbda0ea48
+llama31_8b:
+  name: Llama-3.1-8B-Instruct
+  tag: llama3.1:8b-instruct-q4_K_M
+  digest_prefix: 46e0c10c039e
+mistral_7b:
+  name: Mistral-7B-Instruct-v0.3
+  tag: mistral:7b-instruct-v0.3-q4_K_M
+  digest_prefix: 6577803aa9a0

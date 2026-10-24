@@ -1,0 +1,36 @@
+id: T10
+order: 2
+title: Shut rogue DHCP server port
+change: {action: shutdown_interface, device: dist-sw-2, params: {interface: Gi1/0/22}}
+ticket:
+  id: CHG-2110
+  title: Shut rogue DHCP server port dist-sw-2 Gi1/0/22
+  description: A lab device on dist-sw-2 Gi1/0/22 (Building B lab bench 4) is handing out rogue DHCP leases. Shut the port until the lab owner removes the device.
+  comments:
+    - {author: lab-owner, text: Device identified; it will be removed tomorrow.}
+    - {author: cab-bot, text: Emergency change approved on 2026-10-10.}
+alert:
+  id: A-1110
+  device: dist-sw-2
+  severity: major
+  summary: Rogue DHCP server on Gi1/0/22
+  details: DHCP snooping saw untrusted DHCP OFFERs from 10.60.4.1 on dist-sw-2 Gi1/0/22.
+log:
+  device: dist-sw-2
+  lines:
+    - "Oct 10 09:33:41 dist-sw-2 %DHCP_SNOOPING-5-DHCP_SNOOPING_UNTRUSTED_PORT: DHCP_SNOOPING drop message on untrusted port Gi1/0/22, message type: DHCPOFFER"
+    - "Oct 10 09:34:12 dist-sw-2 %DHCP_SNOOPING-5-DHCP_SNOOPING_UNTRUSTED_PORT: DHCP_SNOOPING drop message on untrusted port Gi1/0/22, message type: DHCPOFFER"
+    - "Oct 10 09:40:55 dist-sw-2 %SYS-5-CONFIG_I: Configured from console by admin"
+runbook:
+  name: rogue-device
+  title: Rogue device on a switch port
+  text: |
+    1. Identify the port from the alert and the ticket.
+    2. Shut the port with shutdown_interface.
+    3. Add a ticket comment so the owner knows the port is down.
+kb:
+  id: KB-0410
+  title: Rogue DHCP servers
+  keywords: [rogue, dhcp, server, snooping, leases]
+  query: rogue dhcp server
+  text: Rogue DHCP servers give clients wrong gateways. The port they are connected to is shut until the device is removed.

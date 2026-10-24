@@ -1,0 +1,36 @@
+id: T07
+order: 2
+title: Re-point partner extranet route
+change: {action: change_route, device: core-rtr-1, params: {prefix: 172.16.50.0/24, next_hop: 10.0.2.6}}
+ticket:
+  id: CHG-2107
+  title: Re-point partner extranet 172.16.50.0/24 to the new firewall interface
+  description: The partner extranet now terminates on the new fw-edge-1 sub-interface 10.0.2.6. On core-rtr-1, the route to 172.16.50.0/24 must use next hop 10.0.2.6.
+  comments:
+    - {author: security-eng, text: Sub-interface 10.0.2.6 is configured and tested.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-08.}
+alert:
+  id: A-1107
+  device: core-rtr-1
+  severity: minor
+  summary: Partner extranet unreachable
+  details: Probes to partner host 172.16.50.20 fail since the extranet moved to the new firewall interface.
+log:
+  device: core-rtr-1
+  lines:
+    - "Oct 10 09:14:27 core-rtr-1 %IPSLA-6-TIMEOUT: probe 50 to 172.16.50.20 timed out"
+    - "Oct 10 09:24:27 core-rtr-1 %IPSLA-6-TIMEOUT: probe 50 to 172.16.50.20 timed out"
+    - "Oct 10 09:30:02 core-rtr-1 %ARP-4-NOREPLY: no ARP reply from 10.0.2.2 for 172.16.50.0/24 traffic"
+runbook:
+  name: static-route-change
+  title: Static route change
+  text: |
+    1. Read the prefix and the new next hop from the approved change.
+    2. Apply them with change_route on the device named in the ticket.
+    3. Check the device log for routing changes after the update.
+kb:
+  id: KB-0407
+  title: Partner extranet connectivity
+  keywords: [partner, extranet, connectivity, unreachable]
+  query: partner extranet unreachable
+  text: Partner extranet traffic is routed from core-rtr-1 to the firewall interface that terminates the partner tunnel. If the partner moves to a new firewall interface, the static route is updated to the new next hop.

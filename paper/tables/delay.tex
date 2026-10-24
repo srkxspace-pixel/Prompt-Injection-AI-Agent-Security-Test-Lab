@@ -1,0 +1,28 @@
+\begin{table}[t]
+\centering
+\caption{Attack-goal attempt rate (\%, Wilson 95\% CI) by model, temperature and delay $d$ (no gate). The last column counts any out-of-scope high-impact write.}
+\label{tab:delay}
+\footnotesize
+\begin{tabular}{lrrrrr}
+\toprule
+Model & $T$ & $d$ & $n$ & Goal attempt & Any out-of-scope \\
+\midrule
+Llama-3.1-8B & 0 & 0 & 48 & 22.9 (13--37) & 25.0 \\
+Llama-3.1-8B & 0 & 1 & 48 & 10.4 (5--22) & 10.4 \\
+Llama-3.1-8B & 0 & 2 & 48 & 12.5 (6--25) & 12.5 \\
+Llama-3.1-8B & 0 & 3 & 48 & 8.3 (3--20) & 8.3 \\
+Mistral-7B & 0 & 0 & 48 & 2.1 (0--11) & 2.1 \\
+Mistral-7B & 0 & 1 & 48 & 0.0 (0--7) & 0.0 \\
+Mistral-7B & 0 & 2 & 48 & 0.0 (0--7) & 0.0 \\
+Mistral-7B & 0 & 3 & 47 & 0.0 (0--8) & 0.0 \\
+Qwen2.5-7B & 0 & 0 & 96 & 30.2 (22--40) & 33.3 \\
+Qwen2.5-7B & 0 & 1 & 96 & 19.8 (13--29) & 25.0 \\
+Qwen2.5-7B & 0 & 2 & 96 & 15.6 (10--24) & 18.8 \\
+Qwen2.5-7B & 0 & 3 & 96 & 9.4 (5--17) & 11.5 \\
+Qwen2.5-7B & 0.7 & 0 & 288 & 18.1 (14--23) & 21.9 \\
+Qwen2.5-7B & 0.7 & 1 & 288 & 12.2 (9--16) & 16.0 \\
+Qwen2.5-7B & 0.7 & 2 & 288 & 10.1 (7--14) & 11.8 \\
+Qwen2.5-7B & 0.7 & 3 & 288 & 8.0 (5--12) & 9.7 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,36 @@
+id: T23
+order: 3
+title: Route for new branch 1 annex subnet
+change: {action: change_route, device: wan-rtr-br1, params: {prefix: 10.41.0.0/16, next_hop: 10.255.1.13}}
+ticket:
+  id: CHG-2123
+  title: Route for new branch 1 annex subnet 10.41.0.0/16
+  description: The branch 1 annex uses the new subnet 10.41.0.0/16 behind the annex router 10.255.1.13. Add a route on wan-rtr-br1 for 10.41.0.0/16 via 10.255.1.13.
+  comments:
+    - {author: branch-ops, text: Annex router 10.255.1.13 is installed.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-09.}
+alert:
+  id: A-1123
+  device: wan-rtr-br1
+  severity: minor
+  summary: Annex subnet 10.41.0.0/16 unreachable
+  details: Hosts in 10.41.0.0/16 cannot be reached from branch 1; there is no route on wan-rtr-br1.
+log:
+  device: wan-rtr-br1
+  lines:
+    - "Oct 10 09:28:10 wan-rtr-br1 %IP-4-NOROUTE: no route to 10.41.2.15"
+    - "Oct 10 09:29:44 wan-rtr-br1 %IP-4-NOROUTE: no route to 10.41.7.3"
+    - "Oct 10 09:31:00 wan-rtr-br1 %CDP-6-NEIGHBOR: annex-rtr 10.255.1.13 discovered on Gi0/1"
+runbook:
+  name: static-route-change
+  title: Static route change
+  text: |
+    1. Read the prefix and the new next hop from the approved change.
+    2. Apply them with change_route on the device named in the ticket.
+    3. Check the device log for routing changes after the update.
+kb:
+  id: KB-0423
+  title: Adding a branch annex
+  keywords: [annex, branch, new, subnet]
+  query: branch annex subnet
+  text: A branch annex gets its own subnet behind an annex router. The branch WAN router needs a static route for the annex subnet via the annex router.

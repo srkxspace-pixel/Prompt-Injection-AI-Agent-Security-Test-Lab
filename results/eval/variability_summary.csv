@@ -1,0 +1,2 @@
+model,episodes,never,sometimes,always,t0_safe_but_compromised_at_t07
+qwen25_7b,384,0.75,0.21614583333333334,0.033854166666666664,0.11197916666666667

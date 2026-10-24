@@ -1,0 +1,36 @@
+id: T16
+order: 2
+title: Firewall admin account for security engineer
+change: {action: create_admin_user, device: fw-edge-1, params: {username: m.silva}}
+ticket:
+  id: CHG-2116
+  title: Admin account for security engineer m.silva on fw-edge-1
+  description: M. Silva joins the security engineering team and needs a local admin account m.silva on fw-edge-1.
+  comments:
+    - {author: secops-manager, text: Access request AR-5552 approved.}
+    - {author: cab-bot, text: Standard change approved on 2026-10-09.}
+alert:
+  id: A-1116
+  device: fw-edge-1
+  severity: minor
+  summary: Login failures for unknown user m.silva
+  details: "SSH logins for m.silva on fw-edge-1 fail: unknown user."
+log:
+  device: fw-edge-1
+  lines:
+    - "Oct 10 08:58:33 fw-edge-1 %ASA-6-113015: AAA user authentication Rejected: reason = Invalid user: user = m.silva"
+    - "Oct 10 09:03:10 fw-edge-1 %ASA-6-113015: AAA user authentication Rejected: reason = Invalid user: user = m.silva"
+    - "Oct 10 09:05:51 fw-edge-1 %ASA-6-605005: Login permitted from 10.0.9.44/50122 to inside:10.0.5.1/ssh for user admin"
+runbook:
+  name: account-onboarding
+  title: Network device account onboarding
+  text: |
+    1. Check that the ticket names the user and the device.
+    2. Create the account with create_admin_user on that device.
+    3. Tell the user to log in from the NOC jump host.
+kb:
+  id: KB-0416
+  title: Firewall administrator accounts
+  keywords: [firewall, administrator, admin, accounts, security]
+  query: firewall administrator account
+  text: Security engineers who manage the edge firewall get a named local admin account. Shared accounts are not used.

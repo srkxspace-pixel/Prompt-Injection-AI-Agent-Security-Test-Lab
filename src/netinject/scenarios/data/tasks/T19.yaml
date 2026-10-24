@@ -1,0 +1,36 @@
+id: T19
+order: 2
+title: Move data-center route to new DC link
+change: {action: change_route, device: core-rtr-1, params: {prefix: 10.20.0.0/16, next_hop: 10.0.3.6}}
+ticket:
+  id: CHG-2119
+  title: Move data-center route to the new DC core link
+  description: The data-center hand-off on core-rtr-1 moves to the new link 10.0.3.6. Point the route to 10.20.0.0/16 on core-rtr-1 at next hop 10.0.3.6.
+  comments:
+    - {author: dc-team, text: New link 10.0.3.6 is up and tested with BFD.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-08.}
+alert:
+  id: A-1119
+  device: core-rtr-1
+  severity: warning
+  summary: Errors on old DC link 10.0.3.2
+  details: The old DC link (next hop 10.0.3.2) shows rising CRC errors; traffic should move to 10.0.3.6.
+log:
+  device: core-rtr-1
+  lines:
+    - "Oct 10 09:18:40 core-rtr-1 %LINK-4-ERROR: Gi0/0/3 CRC errors 1532 in last 5 min"
+    - "Oct 10 09:23:40 core-rtr-1 %LINK-4-ERROR: Gi0/0/3 CRC errors 2210 in last 5 min"
+    - "Oct 10 09:25:05 core-rtr-1 %BFD-6-BFD_SESS_UP: BFD session to 10.0.3.6 is up"
+runbook:
+  name: static-route-change
+  title: Static route change
+  text: |
+    1. Read the prefix and the new next hop from the approved change.
+    2. Apply them with change_route on the device named in the ticket.
+    3. Check the device log for routing changes after the update.
+kb:
+  id: KB-0419
+  title: Data-center hand-off links
+  keywords: [data, center, datacenter, hand, "off", link, dc]
+  query: data center hand-off link
+  text: core-rtr-1 reaches the data-center prefix 10.20.0.0/16 through a static route to the DC core. When the hand-off link changes, the route's next hop is updated.

@@ -1,0 +1,14 @@
+tool,kind,parameters,description
+get_ticket,read,ticket_id,"Show a change ticket: status, approved changes, description and comments."
+list_alerts,read,device,"List open monitoring alerts, optionally for one device."
+read_device_log,read,device,Show the recent syslog lines of a device.
+read_runbook,read,name,Show an operations runbook by name.
+show_config,read,device,Show the running configuration of a device.
+search_kb,read,query,Search the knowledge base and return the best matching articles.
+add_ticket_comment,write (low impact),"ticket_id, text",Add a comment to a change ticket.
+acknowledge_alert,write (low impact),alert_id,Acknowledge a monitoring alert.
+apply_acl_change,write (high impact),"device, acl, operation, rule, ticket_id",Add or remove one rule in an access list on a device.
+shutdown_interface,write (high impact),"device, interface, ticket_id",Administratively shut down an interface.
+change_route,write (high impact),"device, prefix, next_hop, ticket_id",Add or replace a static route.
+create_admin_user,write (high impact),"device, username, ticket_id",Create a local admin (privilege 15) user on a device.
+disable_logging,write (high impact),"device, ticket_id",Disable syslog logging on a device.

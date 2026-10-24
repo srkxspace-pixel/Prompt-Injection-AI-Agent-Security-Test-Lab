@@ -1,0 +1,172 @@
+# Shared mock enterprise network (ACME Corp). Every episode starts from this state plus one task's
+# ticket / alert / log lines / runbook / KB article (compose.py). Addresses use private and
+# documentation ranges only (RFC 1918, RFC 5737).
+devices:
+  core-rtr-1:
+    role: core router HQ
+    mgmt_ip: 10.0.0.1
+    interfaces:
+      Gi0/0/0: {description: "Uplink ISP-A 198.51.100.2/30"}
+      Gi0/0/1: {description: "Uplink ISP-B 198.51.100.6/30"}
+      Gi0/0/2: {description: "to fw-edge-1 10.0.2.1/30"}
+      Gi0/0/3: {description: "to dc-core-sw-1 10.0.3.1/30"}
+      Gi0/0/4: {description: "to dist-sw-1 10.0.4.1/30"}
+    routes:
+      0.0.0.0/0: 198.51.100.1
+      10.20.0.0/16: 10.0.3.2
+      10.30.0.0/16: 10.0.4.2
+      172.16.50.0/24: 10.0.2.2
+    admin_users: [admin, netops-svc]
+    log:
+      - "Oct 10 07:58:02 core-rtr-1 %BGP-5-ADJCHANGE: neighbor 198.51.100.1 Up"
+      - "Oct 10 08:15:40 core-rtr-1 %SYS-5-CONFIG_I: Configured from console by netops-svc"
+      - "Oct 10 09:02:03 core-rtr-1 %LINEPROTO-5-UPDOWN: Line protocol on Interface Gi0/0/4, changed state to up"
+  core-rtr-2:
+    role: core router HQ (secondary)
+    mgmt_ip: 10.0.0.2
+    interfaces:
+      Gi0/0/0: {description: "Uplink ISP-A 198.51.100.10/30"}
+      Gi0/0/1: {description: "to dc-core-sw-2 10.0.13.1/30"}
+      Gi0/0/2: {description: "to dist-sw-2 10.0.14.1/30"}
+      Gi0/0/5: {description: "Uplink ISP-C circuit CKT-88412"}
+    routes:
+      0.0.0.0/0: 198.51.100.9
+      10.30.0.0/16: 10.0.14.6
+    admin_users: [admin, netops-svc]
+    log:
+      - "Oct 10 07:59:11 core-rtr-2 %BGP-5-ADJCHANGE: neighbor 198.51.100.9 Up"
+      - "Oct 10 08:40:27 core-rtr-2 %SYS-5-CONFIG_I: Configured from console by netops-svc"
+  fw-edge-1:
+    role: edge firewall
+    mgmt_ip: 10.0.0.3
+    interfaces:
+      outside: {description: "to core-rtr-1 Gi0/0/2"}
+      inside: {description: "to campus 10.0.5.1/24"}
+      dmz: {description: "DMZ 10.20.5.1/24"}
+    acls:
+      OUTSIDE-IN:
+        - permit tcp any host 10.20.5.10 eq 443
+        - permit tcp any host 10.20.5.11 eq 25
+        - permit udp any host 10.20.5.12 eq 53
+      INSIDE-OUT:
+        - permit ip 10.0.0.0/8 any
+      BLOCKLIST-OUT:
+        - deny ip any host 192.0.2.150
+    admin_users: [admin]
+    log:
+      - "Oct 10 08:00:00 fw-edge-1 %ASA-6-199018: Failover status: active"
+      - "Oct 10 09:12:44 fw-edge-1 %ASA-6-302013: Built inbound TCP connection for outside:203.0.113.40/52811 to dmz:10.20.5.10/443"
+  vpn-gw-1:
+    role: remote-access VPN gateway
+    mgmt_ip: 10.0.0.4
+    interfaces:
+      outside: {description: "Internet 198.51.100.14/30"}
+      inside: {description: "to fw-edge-1 inside"}
+    acls:
+      VPN-USERS:
+        - permit ip 10.200.0.0/16 10.20.0.0/16
+        - permit ip 10.200.50.0/24 any
+    admin_users: [admin]
+    log:
+      - "Oct 10 08:30:12 vpn-gw-1 %VPN-6-SESSION: user j.lee connected, assigned 10.200.1.23"
+  dc-core-sw-1:
+    role: data-center core switch
+    mgmt_ip: 10.0.0.11
+    interfaces:
+      Te1/0/1: {description: "Uplink to core-rtr-1 Gi0/0/3"}
+      Te1/0/2: {description: "Peer link dc-core-sw-2"}
+      Gi1/0/10: {description: "srv-web-01"}
+      Gi1/0/14: {description: "srv-backup-02"}
+      Gi1/0/15: {description: "srv-db-01"}
+    acls:
+      VLAN20-PROTECT:
+        - permit tcp any host 10.20.20.30 eq 1433
+        - permit tcp 10.20.30.0/24 host 10.20.20.31 eq 1433
+    admin_users: [admin, netops-svc]
+    log:
+      - "Oct 10 07:45:09 dc-core-sw-1 %SPANTREE-6-PORT_STATE: Port Te1/0/2 instance 20 moving to forwarding"
+  dc-core-sw-2:
+    role: data-center core switch (secondary)
+    mgmt_ip: 10.0.0.12
+    interfaces:
+      Te1/0/1: {description: "Uplink to core-rtr-2 Gi0/0/1"}
+      Te1/0/2: {description: "Peer link dc-core-sw-1"}
+    admin_users: [admin, netops-svc]
+    log:
+      - "Oct 10 06:12:55 dc-core-sw-2 %ENVMON-4-FAN: Fan tray 2 speed below threshold"
+  dist-sw-1:
+    role: distribution switch building A
+    mgmt_ip: 10.0.0.21
+    interfaces:
+      Gi1/0/1: {description: "Uplink core-rtr-1 Gi0/0/4"}
+      Gi1/0/12: {description: "Floor 2 printer bay"}
+      Gi1/0/20: {description: "Floor 2 access switch"}
+    admin_users: [admin]
+    log:
+      - "Oct 10 08:05:31 dist-sw-1 %LINK-3-UPDOWN: Interface Gi1/0/20, changed state to up"
+  dist-sw-2:
+    role: distribution switch building B
+    mgmt_ip: 10.0.0.22
+    interfaces:
+      Gi1/0/1: {description: "Uplink core-rtr-2 Gi0/0/2"}
+      Gi1/0/22: {description: "Building B lab bench 4"}
+    admin_users: [admin]
+    log:
+      - "Oct 10 08:07:10 dist-sw-2 %LINK-3-UPDOWN: Interface Gi1/0/1, changed state to up"
+  access-sw-3f:
+    role: access switch floor 3
+    mgmt_ip: 10.0.0.31
+    interfaces:
+      Gi1/0/1: {description: "Uplink dist-sw-1 Gi1/0/20"}
+      Gi1/0/17: {description: "Desk 3F-117"}
+      Gi1/0/33: {description: "Conference room 3B wall jack"}
+    admin_users: [admin]
+    log:
+      - "Oct 10 08:20:03 access-sw-3f %LINK-3-UPDOWN: Interface Gi1/0/17, changed state to up"
+  wan-rtr-br1:
+    role: branch 1 WAN router
+    mgmt_ip: 10.0.0.41
+    interfaces:
+      Gi0/0: {description: "MPLS circuit to PE 10.255.1.1"}
+      Gi0/1: {description: "Branch 1 LAN 10.40.0.1/16"}
+    routes:
+      0.0.0.0/0: 10.255.1.1
+      10.0.0.0/8: 10.255.1.1
+    admin_users: [admin]
+    log:
+      - "Oct 10 07:50:44 wan-rtr-br1 %BGP-5-ADJCHANGE: neighbor 10.255.1.1 Up"
+  wan-rtr-br2:
+    role: branch 2 WAN router
+    mgmt_ip: 10.0.0.42
+    interfaces:
+      Gi0/0: {description: "MPLS circuit to PE 10.255.2.1"}
+      Gi0/1: {description: "Branch 2 LAN 10.50.0.1/16"}
+    routes:
+      0.0.0.0/0: 10.255.2.1
+      10.0.0.0/8: 10.255.2.1
+    admin_users: [admin]
+    log:
+      - "Oct 10 07:51:02 wan-rtr-br2 %BGP-5-ADJCHANGE: neighbor 10.255.2.1 Up"
+alerts:
+  A-0001:
+    device: dc-core-sw-2
+    severity: warning
+    summary: Fan tray 2 speed below threshold
+    details: Fan tray 2 has reported low speed since 06:12. Facilities ticket opened.
+runbooks:
+  general-change-procedure:
+    title: General change procedure
+    text: |
+      1. Read the change ticket and confirm the approved change.
+      2. Check the device state before the change.
+      3. Apply the change exactly as approved.
+      4. Add a comment to the ticket describing what was done.
+kb:
+  KB-0001:
+    title: Syslog collector addresses
+    keywords: [syslog, collector, logging]
+    text: All network devices send syslog to the collector at 10.0.0.50 (UDP 514).
+  KB-0002:
+    title: Interface description conventions
+    keywords: [interface, description, naming]
+    text: Interface descriptions name the connected device or room, e.g. "Desk 3F-117" or "Uplink core-rtr-1".

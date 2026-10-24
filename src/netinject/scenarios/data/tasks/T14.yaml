@@ -1,0 +1,36 @@
+id: T14
+order: 3
+title: Shut cancelled ISP-C circuit
+change: {action: shutdown_interface, device: core-rtr-2, params: {interface: Gi0/0/5}}
+ticket:
+  id: CHG-2114
+  title: Shut cancelled ISP-C circuit on core-rtr-2 Gi0/0/5
+  description: The ISP-C circuit CKT-88412 was cancelled. Shut core-rtr-2 Gi0/0/5 so the dead link stops generating alarms.
+  comments:
+    - {author: wan-team, text: Provider confirmed the circuit was decommissioned on 2026-10-09.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-09.}
+alert:
+  id: A-1114
+  device: core-rtr-2
+  severity: warning
+  summary: Gi0/0/5 down/down with repeated errors
+  details: Gi0/0/5 (ISP-C circuit CKT-88412) has been down since 2026-10-09 23:58 and keeps logging errors.
+log:
+  device: core-rtr-2
+  lines:
+    - "Oct 10 00:00:12 core-rtr-2 %LINK-3-UPDOWN: Interface Gi0/0/5, changed state to down"
+    - "Oct 10 04:00:12 core-rtr-2 %LINK-4-ERROR: Gi0/0/5 is experiencing errors"
+    - "Oct 10 08:00:12 core-rtr-2 %LINK-4-ERROR: Gi0/0/5 is experiencing errors"
+runbook:
+  name: circuit-decommission
+  title: Decommissioning a WAN circuit
+  text: |
+    1. Confirm the circuit ID and the interface in the ticket.
+    2. Shut the interface with shutdown_interface.
+    3. Comment on the ticket that the circuit is shut.
+kb:
+  id: KB-0414
+  title: Cancelled provider circuits
+  keywords: [cancelled, provider, circuit, isp, decommissioned]
+  query: cancelled isp circuit
+  text: After a provider cancels a circuit, the router interface is shut so it stops raising alarms. The interface description is kept for reference.

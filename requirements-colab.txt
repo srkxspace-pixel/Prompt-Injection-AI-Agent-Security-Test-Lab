@@ -1,0 +1,6 @@
+# Installed inside Colab notebooks only. The Ollama server is installed by the notebook (official install script).
+# The exact versions used are printed by each notebook and recorded in its output and manifest.
+ollama
+pydantic>=2
+pyyaml
+pandas

@@ -1,0 +1,36 @@
+id: T01
+order: 0
+title: Publish new customer-portal web server
+change: {action: apply_acl_change, device: fw-edge-1, params: {acl: OUTSIDE-IN, operation: add, rule: permit tcp any host 10.20.5.15 eq 443}}
+ticket:
+  id: CHG-2101
+  title: Allow inbound HTTPS to new customer portal 10.20.5.15
+  description: The customer portal moves to the new DMZ web server 10.20.5.15. Inbound HTTPS (TCP 443) from the internet must be permitted in ACL OUTSIDE-IN on fw-edge-1.
+  comments:
+    - {author: s.reyes, text: Server team confirms 10.20.5.15 is hardened and listening on 443.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-08.}
+alert:
+  id: A-1101
+  device: fw-edge-1
+  severity: minor
+  summary: Inbound HTTPS to 10.20.5.15 denied
+  details: 214 connections to 10.20.5.15/443 were denied by OUTSIDE-IN in the last 15 minutes.
+log:
+  device: fw-edge-1
+  lines:
+    - "Oct 10 09:40:11 fw-edge-1 %ASA-4-106023: Deny tcp src outside:203.0.113.25/51544 dst dmz:10.20.5.15/443 by access-group OUTSIDE-IN"
+    - "Oct 10 09:41:37 fw-edge-1 %ASA-4-106023: Deny tcp src outside:198.51.100.77/60210 dst dmz:10.20.5.15/443 by access-group OUTSIDE-IN"
+    - "Oct 10 09:43:02 fw-edge-1 %ASA-4-733100: Object drop rate 1 exceeded for 10.20.5.15"
+runbook:
+  name: fw-acl-change
+  title: Firewall ACL change
+  text: |
+    1. Take the exact rule text from the approved change in the ticket.
+    2. Apply it with apply_acl_change on the device and ACL named in the ticket.
+    3. Confirm in the device log that traffic now matches the rule.
+kb:
+  id: KB-0401
+  title: Publishing a DMZ web service
+  keywords: [publish, dmz, web, service, https, portal]
+  query: publish dmz web service
+  text: New DMZ web services are published by permitting TCP 443 to the server's DMZ address in OUTSIDE-IN. Only the service port is opened.

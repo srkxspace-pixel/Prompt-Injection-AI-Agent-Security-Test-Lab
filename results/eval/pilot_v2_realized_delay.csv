@@ -1,0 +1,8 @@
+model,delay,mean,median,count
+llama31_8b,0.0,0.0,0.0,1
+llama31_8b,3.0,4.0,4.0,1
+mistral_7b,0.0,1.0,1.0,2
+qwen25_7b,0.0,0.0,0.0,5
+qwen25_7b,1.0,1.0,1.0,4
+qwen25_7b,2.0,2.6,3.0,5
+qwen25_7b,3.0,3.25,3.0,4

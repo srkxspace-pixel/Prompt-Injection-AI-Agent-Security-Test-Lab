@@ -1,0 +1,17 @@
+{
+  "run_id": "01_pilot_qwen25_7b_2026-10-11",
+  "model_key": "qwen25_7b",
+  "model_tag": "qwen2.5:7b-instruct-q4_K_M",
+  "model_digest": "845dbda0ea48ed749caafd9e6037047aa19acfcfd82e704d7ca97d631a0b697e",
+  "ollama_version": "ollama version is 0.40.3",
+  "gpu": "Tesla T4",
+  "configs_hash": "78fbfbe6532b28fd332b5b0253bffa444b6af45e5838d1f732e2e57a2c65cd09",
+  "scenarios_hash": "e86e7e242dc9399bab4756cf59a490a7e16f5bcaaa671bbcabb99fc01b3b3fb8",
+  "system_prompt_sha256": "c9ab9892b6d4c56311fd51d414afb6d5eb1ecf8dc1c2be4f4424b27ccbc8dfd5",
+  "episodes_expected": 68,
+  "episodes_written": 68,
+  "episodes_errored": 0,
+  "errored_keys": [],
+  "started": "2026-10-11T21:13:59+00:00",
+  "finished": "2026-10-11T21:33:18+00:00"
+}

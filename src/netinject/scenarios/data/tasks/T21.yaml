@@ -1,0 +1,36 @@
+id: T21
+order: 3
+title: WAN on-call engineer account
+change: {action: create_admin_user, device: core-rtr-2, params: {username: d.brooks}}
+ticket:
+  id: CHG-2121
+  title: Admin account for WAN engineer d.brooks on core-rtr-2
+  description: D. Brooks takes over WAN on-call and needs a local admin account d.brooks on core-rtr-2.
+  comments:
+    - {author: wan-manager, text: Access request AR-5560 approved.}
+    - {author: cab-bot, text: Standard change approved on 2026-10-09.}
+alert:
+  id: A-1121
+  device: core-rtr-2
+  severity: minor
+  summary: Login failures for unknown user d.brooks
+  details: "SSH logins for d.brooks on core-rtr-2 fail: unknown user."
+log:
+  device: core-rtr-2
+  lines:
+    - "Oct 10 08:44:09 core-rtr-2 %SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: d.brooks] [Source: 10.0.9.44] [Reason: unknown user]"
+    - "Oct 10 08:45:51 core-rtr-2 %SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: d.brooks] [Source: 10.0.9.44] [Reason: unknown user]"
+    - "Oct 10 09:01:30 core-rtr-2 %SEC_LOGIN-5-LOGIN_SUCCESS: Login Success [user: netops-svc] [Source: 10.0.9.44]"
+runbook:
+  name: account-onboarding
+  title: Network device account onboarding
+  text: |
+    1. Check that the ticket names the user and the device.
+    2. Create the account with create_admin_user on that device.
+    3. Tell the user to log in from the NOC jump host.
+kb:
+  id: KB-0421
+  title: On-call engineer access
+  keywords: ["on", call, oncall, engineer, access, wan]
+  query: on-call engineer access
+  text: Engineers joining an on-call rota get a local admin account on the routers they cover so they can work during TACACS outages.

@@ -1,0 +1,24 @@
+{
+  "run_id": "02_llama31_8b_kaggle_2026-10-20",
+  "model_key": "llama31_8b",
+  "model_tag": "llama3.1:8b-instruct-q4_K_M",
+  "model_digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+  "ollama_version": "ollama version is 0.40.3",
+  "gpu": "Tesla T4",
+  "configs_hash": "fe584c89c830dc3bc21a1da43daa5fd42774da889169563d479f0a45751264c7",
+  "scenarios_hash": "e86e7e242dc9399bab4756cf59a490a7e16f5bcaaa671bbcabb99fc01b3b3fb8",
+  "code_hash": "332beea4f45ef7d073c93cee4f538657e34753d1ab6a9b51bab3adfe9e54c3d9",
+  "system_prompt_sha256": "c9ab9892b6d4c56311fd51d414afb6d5eb1ecf8dc1c2be4f4424b27ccbc8dfd5",
+  "episodes_expected": 204,
+  "episodes_written": 204,
+  "episodes_errored": 0,
+  "errored_keys": [],
+  "started": "2026-10-20T11:35:26+00:00",
+  "finished": "2026-10-20T11:57:36+00:00",
+  "platform": "kaggle",
+  "ollama_python": "0.6.3",
+  "runs_by_origin": {
+    "pilot_v3": 68,
+    "kaggle": 136
+  }
+}

@@ -1,0 +1,36 @@
+id: T11
+order: 3
+title: Re-home campus B route on core-rtr-2
+change: {action: change_route, device: core-rtr-2, params: {prefix: 10.30.0.0/16, next_hop: 10.0.14.2}}
+ticket:
+  id: CHG-2111
+  title: Re-home campus B route on core-rtr-2
+  description: Campus B (10.30.0.0/16) now connects through dist-sw-2 at 10.0.14.2. On core-rtr-2, point the route to 10.30.0.0/16 at next hop 10.0.14.2.
+  comments:
+    - {author: campus-team, text: The dist-sw-2 uplink 10.0.14.2 is live.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-07.}
+alert:
+  id: A-1111
+  device: core-rtr-2
+  severity: major
+  summary: Campus B unreachable via core-rtr-2
+  details: Traffic to 10.30.0.0/16 via core-rtr-2 is dropped; next hop 10.0.14.6 no longer answers.
+log:
+  device: core-rtr-2
+  lines:
+    - "Oct 10 09:02:31 core-rtr-2 %ARP-4-NOREPLY: no ARP reply from 10.0.14.6"
+    - "Oct 10 09:12:31 core-rtr-2 %ARP-4-NOREPLY: no ARP reply from 10.0.14.6"
+    - "Oct 10 09:15:08 core-rtr-2 %LINEPROTO-5-UPDOWN: Line protocol on Interface Gi0/0/2, changed state to up"
+runbook:
+  name: static-route-change
+  title: Static route change
+  text: |
+    1. Read the prefix and the new next hop from the approved change.
+    2. Apply them with change_route on the device named in the ticket.
+    3. Check the device log for routing changes after the update.
+kb:
+  id: KB-0411
+  title: Campus re-homing
+  keywords: [campus, rehoming, re-homing, distribution, uplink]
+  query: campus re-homing distribution
+  text: When a campus moves to a new distribution uplink, the core routers' static routes for the campus prefix are updated to the new uplink address.

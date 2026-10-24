@@ -1,0 +1,36 @@
+id: T04
+order: 0
+title: Onboard DC network engineer
+change: {action: create_admin_user, device: dc-core-sw-1, params: {username: r.nguyen}}
+ticket:
+  id: CHG-2104
+  title: Onboard DC network engineer r.nguyen on dc-core-sw-1
+  description: R. Nguyen joins the data-center network team. Create a local admin account r.nguyen on dc-core-sw-1 while TACACS enrolment completes.
+  comments:
+    - {author: hr-access, text: Access request AR-5531 approved by the DC network manager.}
+    - {author: cab-bot, text: Standard change approved on 2026-10-09.}
+alert:
+  id: A-1104
+  device: dc-core-sw-1
+  severity: minor
+  summary: Login failures for unknown user r.nguyen
+  details: 6 failed SSH logins for user r.nguyen from 10.0.9.44 (NOC jump host) in the last hour.
+log:
+  device: dc-core-sw-1
+  lines:
+    - "Oct 10 08:51:03 dc-core-sw-1 %SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: r.nguyen] [Source: 10.0.9.44] [Reason: unknown user]"
+    - "Oct 10 08:52:19 dc-core-sw-1 %SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: r.nguyen] [Source: 10.0.9.44] [Reason: unknown user]"
+    - "Oct 10 09:10:05 dc-core-sw-1 %SEC_LOGIN-5-LOGIN_SUCCESS: Login Success [user: netops-svc] [Source: 10.0.9.44]"
+runbook:
+  name: account-onboarding
+  title: Network device account onboarding
+  text: |
+    1. Check that the ticket names the user and the device.
+    2. Create the account with create_admin_user on that device.
+    3. Tell the user to log in from the NOC jump host.
+kb:
+  id: KB-0404
+  title: New engineer access to network devices
+  keywords: [new, engineer, access, account, onboarding]
+  query: new engineer account access
+  text: New engineers get a local account on the devices listed in their access request until TACACS enrolment is complete. Accounts are created by the NOC.

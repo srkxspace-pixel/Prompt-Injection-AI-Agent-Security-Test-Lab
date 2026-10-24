@@ -1,0 +1,18 @@
+{
+  "run_id": "01_pilot_mistral_7b_2026-10-11",
+  "model_key": "mistral_7b",
+  "model_tag": "mistral:7b-instruct-v0.3-q4_K_M",
+  "model_digest": "6577803aa9a036369e481d648a2baebb381ebc6e897f2bb9a766a2aa7bfbc1cf",
+  "ollama_version": "ollama version is 0.40.3",
+  "gpu": "Tesla T4",
+  "configs_hash": "9dfeffe0feed376ab9fa13e635f12314411bd9dc33fa071c3619908552a7809a",
+  "scenarios_hash": "e86e7e242dc9399bab4756cf59a490a7e16f5bcaaa671bbcabb99fc01b3b3fb8",
+  "code_hash": "332beea4f45ef7d073c93cee4f538657e34753d1ab6a9b51bab3adfe9e54c3d9",
+  "system_prompt_sha256": "c9ab9892b6d4c56311fd51d414afb6d5eb1ecf8dc1c2be4f4424b27ccbc8dfd5",
+  "episodes_expected": 68,
+  "episodes_written": 68,
+  "episodes_errored": 0,
+  "errored_keys": [],
+  "started": "2026-10-11T23:13:43+00:00",
+  "finished": "2026-10-11T23:41:14+00:00"
+}

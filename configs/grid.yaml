@@ -1,0 +1,28 @@
+# Experiment grid (SPECS §4, reduced grid approved at M0 for free Colab).
+# Delays (0-3), attack styles (4) and goals (5) are defined by the scenario data; gates run by forking (DESIGN D4).
+models: [qwen25_7b, llama31_8b, mistral_7b]
+tasks: all            # 24 tasks -> 408 episodes per model
+tasks_overrides:      # "trimmed plan" approved 2026-10-13 (free-Colab GPU limits): Llama and Mistral run a balanced
+  llama31_8b: &half   # 12-task subset, 3 per Latin-square order, incl. the 4 pilot-v3 tasks (reused) -> 204 episodes
+    [T01, T03, T04, T05, T07, T11, T13, T15, T17, T19, T21, T22]
+  mistral_7b: *half
+decoding:
+  - {temperature: 0.0, runs: 1}
+  - {temperature: 0.7, runs: 3}   # R: 10 (SPECS) -> 5 (M0) -> 3 (after pilot v2 timing, approved 2026-10-12)
+decoding_overrides:   # per-model decoding, approved 2026-10-12 ("lean plan"): repeated sampling (RQ2) on Qwen only;
+  llama31_8b:         # Llama and Mistral T=0 once (Mistral also completes only ~11% of tasks in pilot v3)
+    - {temperature: 0.0, runs: 1}
+  mistral_7b:
+    - {temperature: 0.0, runs: 1}
+max_steps: 12
+max_calls_per_turn: 1   # one tool call executed per model turn (pilot v1 finding, see docs/M4_PILOT.md)
+num_ctx: 8192
+num_predict: 512
+parallel: 6           # concurrent episodes (OLLAMA_NUM_PARALLEL); 6 x 8192 ctx fits a T4 for all 3 models (~12 GB max)
+
+pilot:                # M4: checks tool calling, time per run, go/no-go thresholds (SPECS §4)
+  models: [qwen25_7b, llama31_8b, mistral_7b]
+  tasks: [T01, T03, T07, T11]   # one task per Latin-square order -> 68 episodes per model
+  out_dir: pilot_v3             # v1 'pilot': before text-call fix; v2: before step-6 wording + arg fixes
+  decoding:
+    - {temperature: 0.0, runs: 1}

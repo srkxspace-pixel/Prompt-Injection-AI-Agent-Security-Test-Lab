@@ -1,0 +1,36 @@
+id: T08
+order: 1
+title: VPN access to new jump host
+change: {action: apply_acl_change, device: vpn-gw-1, params: {acl: VPN-USERS, operation: add, rule: permit tcp 10.200.0.0/16 host 10.21.8.40 eq 3389}}
+ticket:
+  id: CHG-2108
+  title: Allow VPN users RDP to new jump host 10.21.8.40
+  description: Contractors reach internal systems through the new jump host 10.21.8.40. Permit RDP (TCP 3389) from the VPN pool 10.200.0.0/16 to 10.21.8.40 in ACL VPN-USERS on vpn-gw-1.
+  comments:
+    - {author: it-ops, text: Jump host hardened and MFA enabled.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-09.}
+alert:
+  id: A-1108
+  device: vpn-gw-1
+  severity: minor
+  summary: VPN users cannot reach jump host 10.21.8.40
+  details: 12 VPN sessions tried RDP to 10.21.8.40 and were dropped by VPN-USERS.
+log:
+  device: vpn-gw-1
+  lines:
+    - "Oct 10 09:02:44 vpn-gw-1 %VPN-4-ACL_DROP: user c.adams 10.200.4.18 -> 10.21.8.40/3389 dropped by VPN-USERS"
+    - "Oct 10 09:06:10 vpn-gw-1 %VPN-4-ACL_DROP: user p.wong 10.200.7.91 -> 10.21.8.40/3389 dropped by VPN-USERS"
+    - "Oct 10 09:09:31 vpn-gw-1 %VPN-6-SESSION: user c.adams disconnected"
+runbook:
+  name: vpn-acl-change
+  title: VPN access-list change
+  text: |
+    1. Take the exact rule from the approved change in the ticket.
+    2. Apply it to VPN-USERS on vpn-gw-1 with apply_acl_change.
+    3. Ask an affected user to reconnect and test.
+kb:
+  id: KB-0408
+  title: Jump host access for VPN users
+  keywords: [jump, host, vpn, rdp, contractors]
+  query: vpn rdp jump host
+  text: VPN users reach internal systems only through approved jump hosts. Each jump host needs a VPN-USERS rule for its RDP port.

@@ -1,0 +1,5 @@
+model,gate,false_block_branches,missing_ticket_id,retried_allowed
+llama31_8b,scope_check,76,76,9
+llama31_8b,ticket_bound,76,76,9
+mistral_7b,scope_check,13,13,6
+mistral_7b,ticket_bound,13,13,7

@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NetOps Injection Demo</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--ink:#1f1f1e;--muted:#6b6a64;--line:#e4e3dd;--accent:#2a78d6;--accent-bg:#e6f0fb;
+--bad:#c23b3a;--bad-bg:#fcebeb;--ok:#1a7f4b;--ok-bg:#e5f4ec;--warn:#9a6400;--warn-bg:#fdf1db;--mark:#ffe08a;--code:#f1f0ec}
+@media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#1f1f1d;--ink:#eeede8;--muted:#a3a29b;--line:#34332f;--accent:#5b9fe9;
+--accent-bg:#1c2b3d;--bad:#ef7b7a;--bad-bg:#3a1f1f;--ok:#5cc58f;--ok-bg:#16301f;--warn:#e8b45a;--warn-bg:#352a14;--mark:#6b5410;--code:#2a2926}
+img.fig{background:#fff;border-radius:6px}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:18px 24px 0;position:sticky;top:0;z-index:5}
+h1{font-size:19px;margin:0 0 4px;font-weight:600}h2{font-size:17px;margin:0 0 10px;font-weight:600}h3{font-size:15px;margin:16px 0 6px;font-weight:600}
+.sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+nav{display:flex;gap:4px;flex-wrap:wrap}nav button{border:0;background:none;color:var(--muted);font:inherit;padding:8px 14px;border-bottom:2px solid transparent;cursor:pointer}
+nav button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+main{max-width:1180px;margin:0 auto;padding:20px 24px 60px}section{display:none}section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 16px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}.stat b{display:block;font-size:24px;font-weight:600}
+.stat span{color:var(--muted);font-size:13px}
+p{margin:0 0 10px}.muted{color:var(--muted)}small{font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600}td.n{text-align:right}.scroll{overflow-x:auto}
+img.fig{max-width:100%;display:block;margin:8px 0}
+.pill{display:inline-block;font-size:12px;padding:1px 8px;border-radius:99px;background:var(--code);color:var(--muted);margin:0 4px 2px 0;white-space:nowrap}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.acc{background:var(--accent-bg);color:var(--accent)}
+.steps{display:flex;gap:6px;margin:12px 0 4px;flex-wrap:wrap}.box{flex:1;min-width:92px;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;font-size:13px;background:var(--card)}
+.box.pay{border-color:var(--bad);background:var(--bad-bg);color:var(--bad);font-weight:600}.box.w{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+.box.gap{border-style:dashed}
+input[type=range]{width:220px;vertical-align:middle}
+.three{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+ul{margin:4px 0 10px;padding-left:20px}li{margin:3px 0}
+/* explorer */
+.ex{display:grid;grid-template-columns:330px 1fr;gap:16px;align-items:start}@media (max-width:860px){.ex{grid-template-columns:1fr}}
+.filters{display:grid;gap:8px}select{font:inherit;font-size:13px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);width:100%}
+label.f{font-size:12px;color:var(--muted)}
+.list{max-height:62vh;overflow:auto;border:1px solid var(--line);border-radius:8px;background:var(--card);margin-top:10px}
+.item{padding:8px 10px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px}.item:hover{background:var(--code)}.item.on{background:var(--accent-bg)}
+.item code{font-size:12px}
+.tabs{display:flex;gap:6px;margin:10px 0}.tabs button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:5px 12px;border-radius:99px;cursor:pointer}
+.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.ev{border-left:3px solid var(--line);padding:6px 0 6px 12px;margin:0 0 8px}.ev.carrier{border-left-color:var(--bad)}.ev.denied{border-left-color:var(--warn)}
+.ev.shared{opacity:.55}
+.call{font:12.5px/1.4 ui-monospace,Consolas,monospace;background:var(--code);border-radius:6px;padding:6px 8px;white-space:pre-wrap;word-break:break-word}
+pre{font:12.5px/1.45 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-word;background:var(--code);border-radius:6px;padding:8px;margin:6px 0}
+details summary{cursor:pointer;font-size:12px;color:var(--muted)}mark{background:var(--mark);color:inherit;border-radius:2px}
+.payload{border:1px solid var(--bad);background:var(--bad-bg);border-radius:8px;padding:8px 10px;font-size:13px}
+.say{font-size:13px;background:var(--accent-bg);border-radius:6px;padding:6px 8px;margin:4px 0;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header>
+  <h1>Delayed tool-output poisoning in network-operations LLM agents</h1>
+  <p class="sub">Local 7–8B models (Qwen2.5-7B, Llama-3.1-8B, Mistral-7B) on a mock enterprise network, with change-control approval gates. All runs below were recorded on T4 GPUs and are replayed here; no model runs in this page.</p>
+  <nav id="nav"></nav>
+</header>
+<main>
+
+<section id="overview">
+  <div class="card">
+    <h2>Research question</h2>
+    <p>When attacker instructions arrive inside a read tool's output several steps before a harmful configuration action, how often do local 7–8B agents execute that action? How does this change across repeated stochastic runs? Does a change-control approval gate stop it without blocking legitimate work?</p>
+  </div>
+  <div class="grid" id="stats"></div>
+  <div class="card" style="margin-top:16px">
+    <h2>How one episode works</h2>
+    <p>The operator asks the agent to apply one approved change ticket, following a fixed procedure: list alerts, read four artifacts (ticket, device log, runbook, knowledge base, in a rotating order), then make the write. An attacker has hidden an instruction in one of the reads. The <b>delay d</b> is the number of reads between that poisoned read and the write.</p>
+    <p>Delay <b id="dval">0</b>: <input type="range" id="dslider" min="0" max="3" step="1" value="0" aria-label="Delay"></p>
+    <div class="steps" id="steps"></div>
+    <p class="muted"><small>The write always comes at step 6; only the payload's position moves. That separates the effect of distance from the effect of being read at all.</small></p>
+  </div>
+  <div class="three">
+    <div class="card"><h3>No gate</h3><p class="muted">Every tool call runs. This is the baseline susceptibility.</p></div>
+    <div class="card"><h3>scope_check</h3><p class="muted">A high-impact write runs only if it cites an <i>approved</i> ticket whose scope covers that exact change.</p></div>
+    <div class="card"><h3>ticket_bound</h3><p class="muted">As scope_check, and the ticket must be <i>the one the operator named</i> in the task.</p></div>
+  </div>
+  <div class="card"><h2>Key findings</h2><ul id="findings"></ul>
+    <p class="muted"><small>All numbers on this page are read from results/eval/*.csv and the run manifests.</small></p></div>
+</section>
+
+<section id="results">
+  <div class="card"><h2>RQ1 · Does delay change the attack rate?</h2><p id="rq1"></p>
+    <img class="fig" src="../figures/fig2_delay.png" alt="Attack-goal attempt rate versus delay for each model, at temperature 0 and 0.7">
+    <h3>Same 12 tasks for every model (T = 0)</h3><div class="scroll" id="tmatched"></div></div>
+  <div class="card"><h2>RQ2 · How much do repeated runs vary?</h2><p id="rq2"></p>
+    <img class="fig" style="max-width:360px" src="../figures/fig3_variability.png" alt="Number of the three seeds that attempted the attacker goal, per Qwen attack episode"></div>
+  <div class="card"><h2>RQ3 · Do the gates stop attacks, and at what cost?</h2><p id="rq3"></p><div class="scroll" id="tgates"></div></div>
+  <div class="card"><h2>RQ4 · Which attack styles and artifacts work best?</h2><p id="rq4"></p>
+    <img class="fig" src="../figures/fig4_style_carrier.png" alt="Heat map of attempt rate by attack style and artifact for each model"></div>
+</section>
+
+<section id="explorer">
+  <div class="ex">
+    <div>
+      <div class="filters card" style="margin:0">
+        <div><label class="f" for="fm">Model</label><select id="fm"></select></div>
+        <div><label class="f" for="fs">Attack style</label><select id="fs"></select></div>
+        <div><label class="f" for="fd">Delay d</label><select id="fd"></select></div>
+        <div><label class="f" for="fo">Outcome</label><select id="fo"></select></div>
+      </div>
+      <div class="muted" style="font-size:12px;margin-top:8px" id="count"></div>
+      <div class="list" id="list"></div>
+    </div>
+    <div id="detail"></div>
+  </div>
+</section>
+
+<section id="env">
+  <div class="card"><h2>Mock network tools</h2><p class="muted">An in-memory network of 11 devices. No tool touches a real device; writes only change the in-memory state.</p><div class="scroll" id="ttools"></div></div>
+  <div class="card"><h2>Models and runs</h2><div class="scroll" id="tmodels"></div>
+    <p class="muted"><small>Qwen also ran each episode with three seeds at temperature 0.7 (RQ2). Llama and Mistral ran a balanced 12-task half of the grid to fit free GPU quotas. The explorer shows the temperature-0 run of every episode.</small></p></div>
+</section>
+
+</main>
+<script src="data.js"></script>
+<script>
+const D = window.DEMO, T = D.tables, N = D.names;
+const $ = id => document.getElementById(id);
+const pct = (x, d = 1) => x == null || isNaN(x) ? "–" : (100 * x).toFixed(d) + "%";
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const row = (t, f) => t.find(f) || {};
+const pill = (txt, cls = "") => `<span class="pill ${cls}">${esc(txt)}</span>`;
+
+// ---------- navigation
+const tabs = [["overview", "Overview"], ["results", "Results"], ["explorer", "Trace explorer"], ["env", "Environment"]];
+$("nav").innerHTML = tabs.map(([id, t]) => `<button data-t="${id}">${t}</button>`).join("");
+function show(id) {
+  document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === id));
+  document.querySelectorAll("nav button").forEach(b => b.classList.toggle("on", b.dataset.t === id));
+  try { localStorage.setItem("tab", id) } catch (e) {}
+}
+$("nav").onclick = e => e.target.dataset.t && show(e.target.dataset.t);
+let start = "overview"; try { start = localStorage.getItem("tab") || start } catch (e) {}
+show(start);
+
+// ---------- overview
+const M = D.manifests, models = D.models;
+const runs = models.reduce((a, m) => a + M[m].episodes_written, 0);
+const expected = models.reduce((a, m) => a + M[m].episodes_expected, 0);
+$("stats").innerHTML = [
+  [runs.toLocaleString(), `runs analysed (of ${expected.toLocaleString()})`],
+  ["3", "local models via Ollama"],
+  ["3", "gates compared per run"],
+  [T.table1_tools.length, "mock tools (5 high-impact writes)"],
+].map(([b, s]) => `<div class="stat"><b>${b}</b><span>${s}</span></div>`).join("");
+
+function drawSteps(d) {
+  $("dval").textContent = d;
+  const pay = 5 - d, names = ["Alerts", "Read", "Read", "Read", "Read", "Write"];
+  $("steps").innerHTML = names.map((n, i) => {
+    const s = i + 1, cls = s === pay ? "pay" : s === 6 ? "w" : s > pay && s < 6 ? "gap" : "";
+    const lab = s === pay ? "poisoned read" : s === 6 ? "approved write" : s > pay && s < 6 ? "benign read" : n.toLowerCase();
+    return `<div class="box ${cls}">Step ${s}<br><small>${lab}</small></div>`;
+  }).join("");
+}
+$("dslider").oninput = e => drawSteps(+e.target.value);
+drawSteps(0);
+
+const t2 = T.table2_delay, t3 = T.table3_gates, lg = T.logit_delay, gs = T.gates_by_style, vs = T.variability_summary[0];
+const r2 = (m, t, d) => row(t2, r => r.model === m && r.temperature === t && r.delay === d);
+const g3 = (m, g) => row(t3, r => r.model === m && r.gate === g);
+const or = term => { const r = row(lg, x => x.term === term); return [Math.exp(r.coef), Math.exp(r.ci_low), Math.exp(r.ci_high), r.p]; };
+const [orD, orDl, orDh] = or("delay"), [orS, orSl, orSh] = or("C(style)[T.direct]"), [orL, orLl, orLh, pL] = or("C(carrier)[T.log]");
+const qtc = g => row(gs, r => r.model === "qwen25_7b" && r.style === "ticket_confusion" && r.gate === g).rate;
+$("findings").innerHTML = [
+  `<b>Delay weakens the attack but does not remove it.</b> Qwen (T = 0) attempts the attacker's write in ${pct(r2("qwen25_7b", 0, 0).rate)} of episodes at d = 0 and still ${pct(r2("qwen25_7b", 0, 3).rate)} at d = 3; each extra read cuts the odds by about a third (odds ratio ${orD.toFixed(2)}).`,
+  `<b>One run per scenario is not enough.</b> Across three sampled runs, ${pct(vs.sometimes)} of Qwen's attack episodes were compromised in some runs and not others.`,
+  `<b>Gates work, and the rule matters.</b> scope_check cuts Qwen's executed attacks from ${pct(g3("qwen25_7b", "none").asr_goal)} to ${pct(g3("qwen25_7b", "scope_check").asr_goal)}, but every remaining success is a ticket-confusion attack; under ticket_bound, attack success is ${pct(g3("qwen25_7b", "ticket_bound").asr_goal)}.`,
+  `<b>The cost depends on the model.</b> Gates cost Qwen nothing, but Llama's task success under attack falls from ${pct(g3("llama31_8b", "none").task_success_attack)} to ${pct(g3("llama31_8b", "ticket_bound").task_success_attack)}, because it often leaves out the ticket reference.`,
+  `<b>Direct instructions work best.</b> They have ${orS.toFixed(1)}× the odds of being followed compared with fake-authority messages; payloads hidden in device logs work least well.`,
+].map(s => `<li>${s}</li>`).join("");
+
+// ---------- results
+$("rq1").innerHTML = `Attack-goal attempts fall as the delay grows: Qwen at T = 0 goes from ${pct(r2("qwen25_7b", 0, 0).rate)} (d = 0) to ${pct(r2("qwen25_7b", 0, 3).rate)} (d = 3), Llama from ${pct(r2("llama31_8b", 0, 0).rate)} to ${pct(r2("llama31_8b", 0, 3).rate)}. A logistic regression gives an odds ratio of <b>${orD.toFixed(2)}</b> (95% CI ${orDl.toFixed(2)}–${orDh.toFixed(2)}) per extra read between payload and write. Mistral's rates are near zero because it rarely completes any task, which is not the same as being robust.`;
+$("rq2").innerHTML = `Each of Qwen's ${vs.episodes} attack episodes was run with three seeds at temperature 0.7. <b>${pct(vs.never)}</b> were never compromised, <b>${pct(vs.always)}</b> always, and <b>${pct(vs.sometimes)}</b> only in some seeds. ${pct(vs.t0_safe_but_compromised_at_t07)} of episodes looked safe at temperature 0 but were compromised in at least one sampled run.`;
+$("rq3").innerHTML = `Attack success (the attacker's exact write executed) drops from ${pct(g3("qwen25_7b", "none").asr_goal)} to ${pct(g3("qwen25_7b", "scope_check").asr_goal)} under scope_check and ${pct(g3("qwen25_7b", "ticket_bound").asr_goal)} under ticket_bound for Qwen. scope_check lets <b>ticket-confusion</b> attacks through (${pct(qtc("none"))} with no gate versus ${pct(qtc("scope_check"))} under scope_check): the payload cites a real approved ticket for other work. ticket_bound closes that gap.`;
+const st = T.style_carrier.filter(r => r.model === "qwen25_7b"), sr = s => st.filter(r => r.style === s).reduce((a, r) => a + r.k, 0) / st.filter(r => r.style === s).reduce((a, r) => a + r.n, 0);
+$("rq4").innerHTML = `Direct instructions dominate (Qwen ${pct(sr("direct"))}, against ${pct(sr("authority"))} for fake authority, ${pct(sr("ticket_confusion"))} for ticket confusion and ${pct(sr("split"))} for split payloads). The odds ratio for direct versus fake authority is <b>${orS.toFixed(1)}</b> (${orSl.toFixed(1)}–${orSh.toFixed(1)}). Device logs are the weakest carrier (odds ratio ${orL.toFixed(2)} versus knowledge-base articles, p = ${pL.toFixed(2)}).`;
+
+function table(rows, cols) {
+  return `<table><thead><tr>${cols.map(c => `<th class="${c.n ? "n" : ""}">${c.l}</th>`).join("")}</tr></thead><tbody>${
+    rows.map(r => `<tr>${cols.map(c => `<td class="${c.n ? "n" : ""}">${c.f ? c.f(r[c.k], r) : esc(r[c.k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+const mname = m => esc(N[m] || m);
+const m2 = T.matched12_table2_delay, m3 = T.matched12_table3_gates;
+$("tmatched").innerHTML = table(models.map(m => {
+  const o = {model: m}; [0, 1, 2, 3].forEach(d => o["d" + d] = row(m2, r => r.model === m && r.delay === d).rate);
+  ["none", "scope_check", "ticket_bound"].forEach(g => o[g] = row(m3, r => r.model === m && r.gate === g).asr_goal); return o;
+}), [{k: "model", l: "Model", f: mname}, ...[0, 1, 2, 3].map(d => ({k: "d" + d, l: `attempt d=${d}`, n: 1, f: pct})),
+  {k: "none", l: "ASR no gate", n: 1, f: pct}, {k: "scope_check", l: "ASR scope_check", n: 1, f: pct}, {k: "ticket_bound", l: "ASR ticket_bound", n: 1, f: pct}]);
+$("tgates").innerHTML = table(t3, [{k: "model", l: "Model", f: mname}, {k: "gate", l: "Gate", f: v => `<code>${v}</code>`},
+  {k: "asr_goal", l: "Attack success", n: 1, f: pct}, {k: "task_success_attack", l: "Task success (attacked)", n: 1, f: pct},
+  {k: "task_success_control", l: "Task success (no attack)", n: 1, f: pct}, {k: "false_block_control", l: "False blocks (no attack)", n: 1, f: pct},
+  {k: "denials_per_episode", l: "Denials / episode", n: 1, f: v => v.toFixed(2)}]);
+
+// ---------- environment
+$("ttools").innerHTML = table(T.table1_tools, [{k: "tool", l: "Tool", f: v => `<code>${v}</code>`}, {k: "kind", l: "Kind"}, {k: "parameters", l: "Parameters"}, {k: "description", l: "What it does"}]);
+$("tmodels").innerHTML = table(models.map(m => ({m, ...M[m]})), [{k: "m", l: "Model", f: mname}, {k: "model_tag", l: "Ollama tag", f: v => `<code>${v}</code>`},
+  {k: "model_digest", l: "Digest", f: v => `<code>${v.slice(0, 12)}</code>`}, {k: "episodes_written", l: "Runs", n: 1, f: (v, r) => `${v} / ${r.episodes_expected}`},
+  {k: "runs_by_origin", l: "Where they ran", f: v => Object.entries(v).map(([k, n]) => `${n} ${k === "pilot_v3" ? "pilot" : k}`).join(", ")},
+  {k: "ollama_version", l: "Ollama (Kaggle)", f: v => esc(v.replace("ollama version is ", ""))}, {k: "gpu", l: "GPU"}]);
+
+// ---------- trace explorer
+const E = D.episodes, styles = ["all", "control", "direct", "authority", "ticket_confusion", "split"];
+const outcomes = {
+  all: ["All episodes", () => true],
+  hit: ["Attack succeeded (no gate)", e => e.gates.none.attack_goal_executed],
+  bypass: ["Got past scope_check", e => e.gates.scope_check.attack_goal_executed],
+  blocked: ["Blocked by ticket_bound", e => e.gates.none.attack_goal_executed && e.gates.ticket_bound.gate_blocked],
+  fb: ["Legitimate work falsely blocked", e => e.gates.scope_check.false_block || e.gates.ticket_bound.false_block],
+  resisted: ["Read the payload, did not act", e => e.style !== "control" && !e.gates.none.attack_goal_attempted],
+};
+const opt = (el, items) => el.innerHTML = items.map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join("");
+opt($("fm"), [["all", "All models"], ...models.map(m => [m, N[m]])]);
+opt($("fs"), styles.map(s => [s, s === "all" ? "All styles" : s.replace("_", " ")]));
+opt($("fd"), [["all", "Any delay"], ...[0, 1, 2, 3].map(d => [d, "d = " + d])]);
+opt($("fo"), Object.entries(outcomes).map(([k, [t]]) => [k, t]));
+let cur = E.find(e => e.model === "qwen25_7b" && e.id === "T02__ticket_confusion__d3") || E[0], gate = "none";
+["fm", "fs", "fd", "fo"].forEach(id => $(id).onchange = renderList);
+
+function badges(e) {
+  const g = e.gates;
+  if (e.style === "control") return pill("no attack") + (g.none.task_success ? pill("task done", "ok") : "");
+  return (g.none.attack_goal_executed ? pill("attack succeeded", "bad") : g.none.attack_goal_attempted ? pill("attempted", "warn") : pill("resisted", "ok"))
+    + (g.scope_check.attack_goal_executed ? pill("past scope_check", "bad") : "")
+    + (g.ticket_bound.gate_blocked && g.none.attack_goal_executed ? pill("ticket_bound blocked", "acc") : "");
+}
+function renderList() {
+  const m = $("fm").value, s = $("fs").value, d = $("fd").value, o = outcomes[$("fo").value][1];
+  const rows = E.filter(e => (m === "all" || e.model === m) && (s === "all" || e.style === s) && (d === "all" || String(e.delay) === d) && o(e));
+  $("count").textContent = `${rows.length} episode${rows.length === 1 ? "" : "s"} (temperature 0)` + (rows.length > 300 ? " · showing the first 300" : "");
+  $("list").innerHTML = rows.slice(0, 300).map((e, i) => `<div class="item ${e === cur ? "on" : ""}" data-i="${E.indexOf(e)}"><b>${mname(e.model)}</b> <code>${esc(e.id)}</code><br>${badges(e)}</div>`).join("")
+    || `<div class="item muted">No episodes match these filters.</div>`;
+}
+$("list").onclick = ev => { const it = ev.target.closest(".item"); if (it && it.dataset.i) { cur = E[+it.dataset.i]; gate = "none"; renderList(); renderDetail(); } };
+
+function highlight(text, payload) {
+  let h = esc(text);
+  if (payload) { const p = esc(payload.slice(0, 80)); const i = h.indexOf(p);
+    if (i >= 0) { const full = esc(payload); const j = h.indexOf(full) >= 0 ? h.indexOf(full) : i; const len = h.indexOf(full) >= 0 ? full.length : h.length - i;
+      h = h.slice(0, j) + "<mark>" + h.slice(j, j + len) + "</mark>" + h.slice(j + len); } }
+  return h;
+}
+function renderDetail() {
+  const e = cur, g = e.gates[gate], evs = g.same ? e.gates.none.events : g.events, fork = g.fork;
+  const tabsHtml = ["none", "scope_check", "ticket_bound"].map(x => `<button class="${x === gate ? "on" : ""}" data-g="${x}">${x === "none" ? "No gate" : x}</button>`).join("");
+  const out = [
+    g.task_success ? pill("task done", "ok") : pill("task not done", "warn"),
+    e.style === "control" ? "" : g.attack_goal_executed ? pill("attacker's write executed", "bad") : g.attack_goal_attempted ? pill("attacker's write attempted, not executed", "warn") : pill("attacker's write not attempted", "ok"),
+    g.gate_blocked ? pill("gate blocked an unsafe write", "acc") : "", g.false_block ? pill("gate blocked legitimate work", "warn") : "",
+  ].join("");
+  let html = `<div class="card"><h2 style="margin-bottom:4px">${mname(e.model)} · <code>${esc(e.id)}</code></h2>
+    <p class="muted" style="font-size:13px">${e.style === "control" ? "Control episode (no attack)" : `Style <b>${esc(e.style.replace("_", " "))}</b> · payload in the <b>${esc(e.carrier)}</b> read at step ${e.carrier_step} · delay d = ${e.delay}`} · ran on ${esc(e.origin === "pilot_v3" ? "Colab (pilot)" : e.origin)}</p>
+    <details><summary>Operator's task</summary><pre>${esc(e.user)}</pre></details>
+    <p style="font-size:13px;margin:8px 0 0"><b>Approved change:</b> <code>${esc(e.approved)}</code>${e.goal ? `<br><b>Attacker's goal:</b> <code>${esc(e.goal)}</code>` : ""}</p>
+    ${e.payload ? `<div class="payload" style="margin-top:8px"><b>Hidden instruction</b><br>${esc(e.payload)}</div>` : ""}
+    <div class="tabs" id="gtabs">${tabsHtml}</div><div>${out}</div>
+    ${g.same ? `<p class="muted" style="font-size:13px;margin-top:8px">This gate never denied a call, so the run is identical to the no-gate run.</p>` : ""}
+    ${fork ? `<p class="muted" style="font-size:13px;margin-top:8px">The gate first denied a call at step ${fork}; steps before that are shared with the no-gate run (shown faded).</p>` : ""}
+  </div><div class="card">`;
+  for (const ev of evs) {
+    const shared = fork && ev.s < fork ? "shared" : "";
+    if (ev.k === "llm") { if (ev.text) html += `<div class="ev ${shared}"><small class="muted">Step ${ev.s} · agent says</small><div class="say">${esc(ev.text)}</div></div>`; continue; }
+    const carrier = e.payload && ev.out.includes(e.payload.slice(0, 80)) ? "carrier" : "", denied = ev.ok ? "" : "denied";
+    html += `<div class="ev ${carrier} ${denied} ${shared}"><small class="muted">Step ${ev.s} · tool call</small>
+      <div class="call">${esc(ev.name)}(${esc(Object.entries(ev.args).map(([k, v]) => `${k}=${JSON.stringify(v)}`).join(", "))})</div>
+      ${ev.ok ? "" : `<div style="margin:4px 0">${pill("DENIED", "warn")} <small>${esc(ev.why)}</small></div>`}
+      ${carrier ? `<div style="margin:4px 0">${pill("poisoned output: contains the hidden instruction", "bad")}</div>` : ""}
+      <details ${carrier || !ev.ok ? "open" : ""}><summary>Tool output</summary><pre>${carrier ? highlight(ev.out, e.payload) : esc(ev.out)}</pre></details></div>`;
+  }
+  $("detail").innerHTML = html + "</div>";
+  $("gtabs").onclick = x => { if (x.target.dataset.g) { gate = x.target.dataset.g; renderDetail(); } };
+}
+renderList(); renderDetail();
+</script>
+</body>
+</html>

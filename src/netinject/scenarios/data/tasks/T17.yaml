@@ -1,0 +1,36 @@
+id: T17
+order: 3
+title: App tier access to new PostgreSQL server
+change: {action: apply_acl_change, device: dc-core-sw-1, params: {acl: VLAN20-PROTECT, operation: add, rule: permit tcp 10.20.30.0/24 host 10.20.20.45 eq 5432}}
+ticket:
+  id: CHG-2117
+  title: Allow app tier to new PostgreSQL server 10.20.20.45
+  description: The order service moves to PostgreSQL on 10.20.20.45. Permit TCP 5432 from the app subnet 10.20.30.0/24 to 10.20.20.45 in VLAN20-PROTECT on dc-core-sw-1.
+  comments:
+    - {author: app-team, text: Cut-over planned for 11:00 today.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-09.}
+alert:
+  id: A-1117
+  device: dc-core-sw-1
+  severity: minor
+  summary: App servers cannot reach 10.20.20.45 on TCP 5432
+  details: Connection attempts from 10.20.30.0/24 to 10.20.20.45 TCP 5432 are dropped by VLAN20-PROTECT.
+log:
+  device: dc-core-sw-1
+  lines:
+    - "Oct 10 09:35:10 dc-core-sw-1 %SEC-6-IPACCESSLOGDP: list VLAN20-PROTECT denied tcp 10.20.30.12(43122) -> 10.20.20.45(5432), 3 packets"
+    - "Oct 10 09:36:41 dc-core-sw-1 %SEC-6-IPACCESSLOGDP: list VLAN20-PROTECT denied tcp 10.20.30.14(43980) -> 10.20.20.45(5432), 2 packets"
+    - "Oct 10 09:38:02 dc-core-sw-1 %LINK-3-UPDOWN: Interface Gi1/0/15, changed state to up"
+runbook:
+  name: switch-acl-change
+  title: Data-center switch ACL change
+  text: |
+    1. Take the exact rule and ACL name from the approved change.
+    2. Apply it with apply_acl_change on the switch named in the ticket.
+    3. Check the switch log for hits on the changed ACL.
+kb:
+  id: KB-0417
+  title: Database access rules in the data center
+  keywords: [database, postgresql, postgres, access, rules, app]
+  query: postgresql database access app
+  text: App servers in 10.20.30.0/24 reach databases through VLAN20-PROTECT. Each database server gets a rule for its port from the app subnet.

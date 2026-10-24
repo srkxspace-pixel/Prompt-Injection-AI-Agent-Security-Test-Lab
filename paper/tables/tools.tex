@@ -1,0 +1,25 @@
+\begin{table}[t]
+\centering
+\caption{Mock environment: tool inventory.}
+\label{tab:tools}
+\footnotesize
+\begin{tabular}{lll}
+\toprule
+Tool & Kind & Parameters \\
+\midrule
+\texttt{get\_ticket} & read & ticket\_id \\
+\texttt{list\_alerts} & read & device \\
+\texttt{read\_device\_log} & read & device \\
+\texttt{read\_runbook} & read & name \\
+\texttt{show\_config} & read & device \\
+\texttt{search\_kb} & read & query \\
+\texttt{add\_ticket\_comment} & low-impact write & ticket\_id, text \\
+\texttt{acknowledge\_alert} & low-impact write & alert\_id \\
+\texttt{apply\_acl\_change} & high-impact write & device, acl, operation, rule, ticket\_id \\
+\texttt{shutdown\_interface} & high-impact write & device, interface, ticket\_id \\
+\texttt{change\_route} & high-impact write & device, prefix, next\_hop, ticket\_id \\
+\texttt{create\_admin\_user} & high-impact write & device, username, ticket\_id \\
+\texttt{disable\_logging} & high-impact write & device, ticket\_id \\
+\bottomrule
+\end{tabular}
+\end{table}

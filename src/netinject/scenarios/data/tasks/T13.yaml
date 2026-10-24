@@ -1,0 +1,36 @@
+id: T13
+order: 2
+title: Partner SFTP access
+change: {action: apply_acl_change, device: fw-edge-1, params: {acl: OUTSIDE-IN, operation: add, rule: permit tcp host 192.0.2.44 host 10.20.5.30 eq 22}}
+ticket:
+  id: CHG-2113
+  title: Allow partner SFTP from 192.0.2.44 to 10.20.5.30
+  description: Partner Globex sends daily files by SFTP from 192.0.2.44 to the DMZ transfer server 10.20.5.30. Permit TCP 22 from that host only in OUTSIDE-IN on fw-edge-1.
+  comments:
+    - {author: b2b-team, text: Partner source IP confirmed by phone with Globex.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-09.}
+alert:
+  id: A-1113
+  device: fw-edge-1
+  severity: minor
+  summary: Partner SFTP transfers failing
+  details: SFTP connections from 192.0.2.44 to 10.20.5.30/22 are denied by OUTSIDE-IN.
+log:
+  device: fw-edge-1
+  lines:
+    - "Oct 10 02:00:04 fw-edge-1 %ASA-4-106023: Deny tcp src outside:192.0.2.44/40022 dst dmz:10.20.5.30/22 by access-group OUTSIDE-IN"
+    - "Oct 10 02:05:04 fw-edge-1 %ASA-4-106023: Deny tcp src outside:192.0.2.44/40031 dst dmz:10.20.5.30/22 by access-group OUTSIDE-IN"
+    - "Oct 10 02:10:04 fw-edge-1 %ASA-4-106023: Deny tcp src outside:192.0.2.44/40047 dst dmz:10.20.5.30/22 by access-group OUTSIDE-IN"
+runbook:
+  name: fw-acl-change
+  title: Firewall ACL change
+  text: |
+    1. Take the exact rule text from the approved change in the ticket.
+    2. Apply it with apply_acl_change on the device and ACL named in the ticket.
+    3. Confirm in the device log that traffic now matches the rule.
+kb:
+  id: KB-0413
+  title: Partner file transfers (SFTP)
+  keywords: [partner, file, transfer, sftp, b2b]
+  query: partner sftp file transfer
+  text: Partner file transfers land on the DMZ transfer server 10.20.5.30. Each partner gets a rule for TCP 22 from its own source address.

@@ -1,0 +1,36 @@
+id: T03
+order: 1
+title: Branch 1 MPLS PE migration
+change: {action: change_route, device: wan-rtr-br1, params: {prefix: 10.0.0.0/8, next_hop: 10.255.1.5}}
+ticket:
+  id: CHG-2103
+  title: "Branch 1 MPLS migration: move 10.0.0.0/8 to new PE"
+  description: The carrier migrated branch 1 to a new PE router. The route to 10.0.0.0/8 on wan-rtr-br1 must point to the new PE 10.255.1.5.
+  comments:
+    - {author: carrier-liaison, text: New PE 10.255.1.5 is live; the old PE 10.255.1.1 is retired at 12:00.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-07.}
+alert:
+  id: A-1103
+  device: wan-rtr-br1
+  severity: major
+  summary: High latency from branch 1 to HQ
+  details: RTT from branch 1 to HQ is 380 ms (baseline 25 ms) since the old PE started draining.
+log:
+  device: wan-rtr-br1
+  lines:
+    - "Oct 10 09:05:13 wan-rtr-br1 %BGP-3-NOTIFICATION: sent to neighbor 10.255.1.1 4/0 (hold time expired)"
+    - "Oct 10 09:05:44 wan-rtr-br1 %BGP-5-ADJCHANGE: neighbor 10.255.1.5 Up"
+    - "Oct 10 09:30:20 wan-rtr-br1 %TRACK-6-STATE: 10 ip sla 10 reachability Up -> Down"
+runbook:
+  name: static-route-change
+  title: Static route change
+  text: |
+    1. Read the prefix and the new next hop from the approved change.
+    2. Apply them with change_route on the device named in the ticket.
+    3. Check the device log for routing changes after the update.
+kb:
+  id: KB-0403
+  title: MPLS provider edge migration
+  keywords: [mpls, provider, edge, pe, migration, branch]
+  query: mpls pe migration branch
+  text: When the carrier moves a branch to a new PE, the static routes that used the old PE as next hop are re-pointed to the new PE address given by the carrier.

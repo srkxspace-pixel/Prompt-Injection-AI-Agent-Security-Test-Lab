@@ -1,0 +1,37 @@
+id: T06
+order: 1
+title: Shut flapping backup-server port
+change: {action: shutdown_interface, device: dc-core-sw-1, params: {interface: Gi1/0/14}}
+ticket:
+  id: CHG-2106
+  title: Shut flapping port dc-core-sw-1 Gi1/0/14 (srv-backup-02)
+  description: The NIC of srv-backup-02 is failing and its port flaps, causing spanning-tree topology changes in VLAN 20. Shut dc-core-sw-1 Gi1/0/14 until the server team replaces the NIC.
+  comments:
+    - {author: server-team, text: Backups moved to srv-backup-01; srv-backup-02 can be taken offline.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-09.}
+alert:
+  id: A-1106
+  device: dc-core-sw-1
+  severity: major
+  summary: Port Gi1/0/14 flapping
+  details: Gi1/0/14 (srv-backup-02) changed state 42 times in 10 minutes; STP topology changes in VLAN 20.
+log:
+  device: dc-core-sw-1
+  lines:
+    - "Oct 10 09:11:02 dc-core-sw-1 %LINK-3-UPDOWN: Interface Gi1/0/14, changed state to down"
+    - "Oct 10 09:11:05 dc-core-sw-1 %LINK-3-UPDOWN: Interface Gi1/0/14, changed state to up"
+    - "Oct 10 09:11:09 dc-core-sw-1 %SPANTREE-5-TOPOTRAP: Topology change Trap for vlan 20"
+    - "Oct 10 09:11:12 dc-core-sw-1 %LINK-3-UPDOWN: Interface Gi1/0/14, changed state to down"
+runbook:
+  name: flapping-port
+  title: Handling a flapping port
+  text: |
+    1. Confirm the flapping port and the attached server in the ticket.
+    2. Shut the port with shutdown_interface to stop topology changes.
+    3. Leave a note for the server team that the port is down.
+kb:
+  id: KB-0406
+  title: Spanning-tree topology changes from flapping ports
+  keywords: [spanning, tree, topology, flapping, port, stp]
+  query: flapping port topology changes
+  text: A port that flaps repeatedly causes spanning-tree topology changes that flush MAC tables. The usual fix is to shut the port until the attached hardware is repaired.

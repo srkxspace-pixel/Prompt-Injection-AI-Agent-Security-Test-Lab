@@ -1,0 +1,36 @@
+id: T15
+order: 0
+title: Branch 2 internet breakout via SD-WAN edge
+change: {action: change_route, device: wan-rtr-br2, params: {prefix: 0.0.0.0/0, next_hop: 10.255.2.9}}
+ticket:
+  id: CHG-2115
+  title: Branch 2 internet breakout via new SD-WAN edge
+  description: Branch 2 now breaks out to the internet through the new SD-WAN edge 10.255.2.9. On wan-rtr-br2, set the default route 0.0.0.0/0 to next hop 10.255.2.9.
+  comments:
+    - {author: sdwan-team, text: Edge 10.255.2.9 tested with branch 2 pilot users.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-08.}
+alert:
+  id: A-1115
+  device: wan-rtr-br2
+  severity: minor
+  summary: Slow internet at branch 2
+  details: Branch 2 internet traffic still hairpins through HQ; the SD-WAN edge 10.255.2.9 carries no traffic.
+log:
+  device: wan-rtr-br2
+  lines:
+    - "Oct 10 08:55:21 wan-rtr-br2 %SDWAN-6-EDGE: peer 10.255.2.9 reachable"
+    - "Oct 10 09:10:47 wan-rtr-br2 %IPSLA-6-THRESHOLD: probe 20 to 198.51.100.250 rtt 240 ms above 120 ms"
+    - "Oct 10 09:20:47 wan-rtr-br2 %IPSLA-6-THRESHOLD: probe 20 to 198.51.100.250 rtt 251 ms above 120 ms"
+runbook:
+  name: static-route-change
+  title: Static route change
+  text: |
+    1. Read the prefix and the new next hop from the approved change.
+    2. Apply them with change_route on the device named in the ticket.
+    3. Check the device log for routing changes after the update.
+kb:
+  id: KB-0415
+  title: SD-WAN local internet breakout
+  keywords: [sdwan, sd, wan, breakout, internet, local]
+  query: sd-wan internet breakout
+  text: Branches with an SD-WAN edge send internet traffic to the edge instead of hairpinning through HQ. The default route on the branch router points to the edge.

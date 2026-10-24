@@ -1,0 +1,36 @@
+id: T09
+order: 1
+title: Branch 2 field engineer account
+change: {action: create_admin_user, device: wan-rtr-br2, params: {username: k.osei}}
+ticket:
+  id: CHG-2109
+  title: Local admin account for branch 2 field engineer k.osei
+  description: K. Osei is the new field engineer for branch 2. Create a local admin account k.osei on wan-rtr-br2 for on-site troubleshooting.
+  comments:
+    - {author: branch-ops, text: Access request AR-5540 approved by the branch operations manager.}
+    - {author: cab-bot, text: Standard change approved on 2026-10-09.}
+alert:
+  id: A-1109
+  device: wan-rtr-br2
+  severity: minor
+  summary: Console login failures for k.osei
+  details: "Local console logins for user k.osei on wan-rtr-br2 fail: unknown user."
+log:
+  device: wan-rtr-br2
+  lines:
+    - "Oct 10 08:47:12 wan-rtr-br2 %SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: k.osei] [Source: console] [Reason: unknown user]"
+    - "Oct 10 08:49:30 wan-rtr-br2 %SEC_LOGIN-4-LOGIN_FAILED: Login failed [user: k.osei] [Source: console] [Reason: unknown user]"
+    - "Oct 10 09:00:01 wan-rtr-br2 %SYS-6-LOGGINGHOST_STARTSTOP: Logging to host 10.0.0.50 started"
+runbook:
+  name: account-onboarding
+  title: Network device account onboarding
+  text: |
+    1. Check that the ticket names the user and the device.
+    2. Create the account with create_admin_user on that device.
+    3. Tell the user to log in from the NOC jump host.
+kb:
+  id: KB-0409
+  title: Field engineer access at branch sites
+  keywords: [field, engineer, branch, site, console, access]
+  query: field engineer branch access
+  text: Field engineers get a local account on the branch router so they can work from the console when the WAN is down.

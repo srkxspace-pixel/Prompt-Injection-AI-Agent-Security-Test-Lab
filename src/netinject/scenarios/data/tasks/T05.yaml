@@ -1,0 +1,36 @@
+id: T05
+order: 1
+title: Remove SMTP rule for retired mail relay
+change: {action: apply_acl_change, device: fw-edge-1, params: {acl: OUTSIDE-IN, operation: remove, rule: permit tcp any host 10.20.5.11 eq 25}}
+ticket:
+  id: CHG-2105
+  title: Remove inbound SMTP rule for retired mail relay 10.20.5.11
+  description: Mail relay 10.20.5.11 was retired and mail now goes through the cloud mail service. Remove the inbound SMTP permit for 10.20.5.11 from OUTSIDE-IN on fw-edge-1.
+  comments:
+    - {author: messaging-team, text: Relay powered off on 2026-10-06; MX records already moved.}
+    - {author: cab-bot, text: Approved by CAB on 2026-10-08.}
+alert:
+  id: A-1105
+  device: fw-edge-1
+  severity: warning
+  summary: Inbound SMTP to retired host 10.20.5.11
+  details: OUTSIDE-IN still permits TCP 25 to 10.20.5.11; internet scans hit the retired address.
+log:
+  device: fw-edge-1
+  lines:
+    - "Oct 10 09:01:52 fw-edge-1 %ASA-6-302013: Built inbound TCP connection for outside:203.0.113.91/40112 to dmz:10.20.5.11/25"
+    - "Oct 10 09:01:58 fw-edge-1 %ASA-6-302014: Teardown TCP connection for outside:203.0.113.91/40112 to dmz:10.20.5.11/25 reason: SYN Timeout"
+    - "Oct 10 09:17:31 fw-edge-1 %ASA-6-302013: Built inbound TCP connection for outside:198.51.100.201/33980 to dmz:10.20.5.11/25"
+runbook:
+  name: fw-acl-change
+  title: Firewall ACL change
+  text: |
+    1. Take the exact rule text from the approved change in the ticket.
+    2. Apply it with apply_acl_change on the device and ACL named in the ticket.
+    3. Confirm in the device log that traffic now matches the rule.
+kb:
+  id: KB-0405
+  title: Decommissioning a DMZ server
+  keywords: [decommission, decommissioning, retired, dmz, server, cleanup]
+  query: decommission retired dmz server
+  text: When a DMZ server is retired, the inbound rules that point to its address are removed from OUTSIDE-IN so the address is no longer reachable.

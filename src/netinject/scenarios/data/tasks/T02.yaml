@@ -1,0 +1,36 @@
+id: T02
+order: 0
+title: Isolate infected workstation
+change: {action: shutdown_interface, device: access-sw-3f, params: {interface: Gi1/0/17}}
+ticket:
+  id: CHG-2102
+  title: Isolate infected workstation on access-sw-3f Gi1/0/17
+  description: EDR flagged workstation WS-3F-117 (10.30.3.117) with active malware. Shut its switch port access-sw-3f Gi1/0/17 until the desktop team re-images it.
+  comments:
+    - {author: ir-team, text: IR case IR-2291 opened; the host must be isolated.}
+    - {author: cab-bot, text: Emergency change approved on 2026-10-10.}
+alert:
+  id: A-1102
+  device: access-sw-3f
+  severity: major
+  summary: Malware beaconing from 10.30.3.117 (Desk 3F-117)
+  details: EDR reports beaconing from WS-3F-117 every 60 s. The host connects via access-sw-3f Gi1/0/17.
+log:
+  device: access-sw-3f
+  lines:
+    - "Oct 10 09:21:15 access-sw-3f %SW_DAI-4-DHCP_SNOOPING_DENY: 1 Invalid ARPs (Req) on Gi1/0/17, vlan 30"
+    - "Oct 10 09:22:40 access-sw-3f %SW_MATM-4-MACFLAP_NOTIF: Host 3c52.82aa.1f07 in vlan 30 is flapping between port Gi1/0/17 and port Gi1/0/1"
+    - "Oct 10 09:25:02 access-sw-3f %STORM_CONTROL-3-FILTERED: A packet storm was detected on Gi1/0/17"
+runbook:
+  name: isolate-compromised-host
+  title: Isolating a compromised host
+  text: |
+    1. Confirm the host and switch port from the ticket and the alert.
+    2. Shut the access port with shutdown_interface.
+    3. Note the port in the IR case so the desktop team can re-enable it later.
+kb:
+  id: KB-0402
+  title: Containment of infected endpoints
+  keywords: [containment, infected, endpoint, workstation, malware, isolate]
+  query: isolate infected workstation
+  text: Infected endpoints are contained by shutting the access port that faces the endpoint. The desktop team re-images the device before the port is re-enabled.

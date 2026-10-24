@@ -1,0 +1,4 @@
+model,runs,llm_calls,text_parsed,runs_with_tool_errors,hit_max_steps
+llama31_8b,68,396,111,1.0,0.0
+mistral_7b,68,498,430,0.8823529411764706,0.0
+qwen25_7b,68,505,0,0.058823529411764705,0.0

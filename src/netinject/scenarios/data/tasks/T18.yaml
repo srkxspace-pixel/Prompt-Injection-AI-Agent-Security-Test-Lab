@@ -1,0 +1,36 @@
+id: T18
+order: 0
+title: Shut port with unauthorized access point
+change: {action: shutdown_interface, device: access-sw-3f, params: {interface: Gi1/0/33}}
+ticket:
+  id: CHG-2118
+  title: Shut port with unauthorized access point in conference room 3B
+  description: Wireless scanning found an unauthorized access point plugged into the conference room 3B wall jack (access-sw-3f Gi1/0/33). Shut the port until facilities removes the device.
+  comments:
+    - {author: wireless-team, text: Rogue SSID FreeWifi3B traced to this jack.}
+    - {author: cab-bot, text: Emergency change approved on 2026-10-10.}
+alert:
+  id: A-1118
+  device: access-sw-3f
+  severity: major
+  summary: Unauthorized access point on Gi1/0/33
+  details: Rogue SSID FreeWifi3B detected; its wired MAC is learned on access-sw-3f Gi1/0/33.
+log:
+  device: access-sw-3f
+  lines:
+    - "Oct 10 09:44:18 access-sw-3f %PORT_SECURITY-2-PSECURE_VIOLATION: Security violation occurred, caused by MAC 9e1b.4402.7caa on port Gi1/0/33"
+    - "Oct 10 09:44:20 access-sw-3f %LINK-3-UPDOWN: Interface Gi1/0/33, changed state to up"
+    - "Oct 10 09:50:02 access-sw-3f %SYS-5-CONFIG_I: Configured from console by admin"
+runbook:
+  name: rogue-device
+  title: Rogue device on a switch port
+  text: |
+    1. Identify the port from the alert and the ticket.
+    2. Shut the port with shutdown_interface.
+    3. Add a ticket comment so the owner knows the port is down.
+kb:
+  id: KB-0418
+  title: Unauthorized wireless access points
+  keywords: [unauthorized, rogue, wireless, access, point, ap]
+  query: unauthorized wireless access point
+  text: Unauthorized access points bypass network access control. The switch port they use is shut until facilities removes the device.

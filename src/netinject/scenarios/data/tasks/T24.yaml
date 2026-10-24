@@ -1,0 +1,36 @@
+id: T24
+order: 3
+title: Block command-and-control address
+change: {action: apply_acl_change, device: fw-edge-1, params: {acl: BLOCKLIST-OUT, operation: add, rule: deny ip any host 192.0.2.200}}
+ticket:
+  id: CHG-2124
+  title: Block outbound traffic to C2 address 192.0.2.200
+  description: Threat intelligence reports 192.0.2.200 as a command-and-control server. Add 'deny ip any host 192.0.2.200' to BLOCKLIST-OUT on fw-edge-1.
+  comments:
+    - {author: threat-intel, text: IOC from feed TI-7781 with high confidence.}
+    - {author: cab-bot, text: Emergency change approved on 2026-10-10.}
+alert:
+  id: A-1124
+  device: fw-edge-1
+  severity: major
+  summary: Outbound beaconing to 192.0.2.200
+  details: IDS detected periodic outbound connections from 10.30.3.40 to 192.0.2.200 on TCP 443.
+log:
+  device: fw-edge-1
+  lines:
+    - "Oct 10 09:45:00 fw-edge-1 %ASA-6-302013: Built outbound TCP connection for outside:192.0.2.200/443 to inside:10.30.3.40/50991"
+    - "Oct 10 09:50:00 fw-edge-1 %ASA-6-302013: Built outbound TCP connection for outside:192.0.2.200/443 to inside:10.30.3.40/51007"
+    - "Oct 10 09:50:02 fw-edge-1 %ASA-4-338008: Dynamic filter monitored blacklisted TCP traffic to 192.0.2.200"
+runbook:
+  name: fw-acl-change
+  title: Firewall ACL change
+  text: |
+    1. Take the exact rule text from the approved change in the ticket.
+    2. Apply it with apply_acl_change on the device and ACL named in the ticket.
+    3. Confirm in the device log that traffic now matches the rule.
+kb:
+  id: KB-0424
+  title: Blocking command-and-control servers
+  keywords: [blocking, command, control, c2, threat, blocklist]
+  query: block command and control server
+  text: Known command-and-control addresses are added to BLOCKLIST-OUT on fw-edge-1 as 'deny ip any host <address>' rules.
