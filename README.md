@@ -44,23 +44,48 @@ No model runs in the demo; it replays the recorded GPU runs.
 
 ### Reproduce the analysis (CPU only)
 
-Requires **Python 3.11**; the pinned pandas has no build for 3.13. On Windows (PowerShell):
+**Prerequisites:** Git and **Python 3.11** (the pinned pandas has no build for 3.13). The commands are for Windows PowerShell.
 
-```powershell
-py -3.11 -m venv .venv
-.venv\Scripts\Activate.ps1          # if blocked: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-pip install -r requirements-local.txt
+1. Clone the repository:
+   ```powershell
+   git clone https://github.com/srkxspace-pixel/Prompt-Injection-AI-Agent-Security-Test-Lab.git
+   ```
+2. Go into the folder:
+   ```powershell
+   cd Prompt-Injection-AI-Agent-Security-Test-Lab
+   ```
+3. Create a virtual environment:
+   ```powershell
+   py -3.11 -m venv .venv
+   ```
+4. Install the dependencies (about 5–10 minutes):
+   ```powershell
+   .venv\Scripts\python.exe -m pip install -r requirements-local.txt
+   ```
+5. Run the tests (19 tests with a scripted `FakeLLM`; no model needed):
+   ```powershell
+   .venv\Scripts\python.exe -m pytest -q -p no:cacheprovider
+   ```
+6. Point Python at the source folder (once per terminal):
+   ```powershell
+   $env:PYTHONPATH = "src"
+   ```
+7. Regenerate the results from the recorded traces (about 2 minutes):
+   ```powershell
+   .venv\Scripts\python.exe -m netinject.scenarios.compose                # validate the 24 tasks / 408 episodes
+   .venv\Scripts\python.exe -m netinject.reporting.report results/traces  # labels, results/eval/*.csv, figures/*.png
+   .venv\Scripts\python.exe scripts/review_tables.py                      # matched-task tables, false-block causes
+   .venv\Scripts\python.exe scripts/make_paper_tables.py                  # paper/tables/*.tex
+   .venv\Scripts\python.exe scripts/build_demo.py                         # demo/data.js
+   ```
+8. Open the demo:
+   ```powershell
+   start demo\index.html
+   ```
 
-python -m pytest -q -p no:cacheprovider                   # 19 tests (scripted FakeLLM, no model)
-$env:PYTHONPATH = "src"
-python -m netinject.scenarios.compose                     # validate the 24 tasks / 408 episodes
-python -m netinject.reporting.report results/traces       # labels, results/eval/*.csv, figures/*.png
-python scripts/review_tables.py                           # matched-task tables, false-block causes
-python scripts/make_paper_tables.py                       # paper/tables/*.tex
-python scripts/build_demo.py                              # demo/data.js
-```
+If step 1 or 4 fails with a path error or `No module named pip`, clone into a shorter folder such as `D:\`, because Windows limits paths to 260 characters.
 
-On macOS or Linux, use `python3.11 -m venv .venv`, then `source .venv/bin/activate` and `export PYTHONPATH=src`.
+On macOS or Linux, use `python3.11 -m venv .venv`, replace `.venv\Scripts\python.exe` with `.venv/bin/python`, use `export PYTHONPATH=src`, and open the demo with `open demo/index.html` (macOS) or `xdg-open demo/index.html` (Linux).
 
 The regenerated tables are byte-identical to the ones committed here. Running the models themselves needs a GPU: see [notebooks/](notebooks/).
 
